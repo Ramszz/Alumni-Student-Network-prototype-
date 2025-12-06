@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentor Profile - Alumni Mentor Connect</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  * {margin:0; padding:0; box-sizing:border-box; font-family: 'Roboto', sans-serif;}
+  html {scroll-behavior: smooth;}
+  body, html {
+    height: 100%;
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80') no-repeat center center/cover;
+    color:#fff;
+  }
+  a {text-decoration:none;}
+  .container {max-width: 1000px; margin: 50px auto; padding: 20px;}
+
+  .back-btn {
+    display:inline-block;
+    background:#ff9800;
+    color:#fff;
+    padding:10px 18px;
+    border-radius:25px;
+    font-weight:bold;
+    transition:0.3s;
+  }
+  .back-btn:hover {background:#e68900; transform:scale(1.05);}
+
+  .profile-header {
+    display:flex; flex-wrap:wrap; gap:20px; padding:30px; border-radius:15px;
+    background: rgba(20,20,20,0.85); box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+    position: relative;
+    align-items:flex-start;
+  }
+
+  .profile-info {flex:1; min-width:250px;}
+  .profile-info h1 {font-size:2rem; color:#ffb347; margin-bottom:10px; text-shadow: 1px 1px 5px #000;}
+  .profile-info p {color:#ddd; margin-bottom:6px;}
+  .profile-info .tag {display:inline-block; background:#ff9800; padding:6px 15px; border-radius:20px; color:#fff; font-weight:500; margin-top:8px; font-size:0.9rem; box-shadow: 0 2px 10px rgba(255,152,0,0.5);}
+
+  .section {margin-top:30px; background: rgba(30,30,30,0.85); padding:25px 30px; border-radius:15px; box-shadow: 0 8px 25px rgba(0,0,0,0.6);}
+  .section h2 {color:#ff9800; font-size:1.4rem; margin-bottom:15px; display:flex; align-items:center; gap:10px;}
+  .section ul {list-style:none; padding-left:0;}
+  .section ul li {margin-bottom:10px; padding-left:25px; position:relative; color:#ddd;}
+  .section ul li::before {content:"\f00c"; font-family: "Font Awesome 6 Free"; font-weight:900; position:absolute; left:0; color:#ff9800;}
+  .highlight-box {background: rgba(255,255,255,0.1); color:#fff; padding:15px 20px; border-radius:10px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);}
+
+  .contact-info {margin-top:25px; padding:20px; background: rgba(30,30,30,0.85); border-radius:15px; box-shadow:0 8px 25px rgba(0,0,0,0.6);}
+  .contact-info h2 {color:#ff9800; margin-bottom:15px;}
+  .contact-info p a {color:#ffb347; font-weight:500;}
+
+  .chat-btn {position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background: linear-gradient(135deg, #ff9800, #ffb347); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(0,0,0,0.4); cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; z-index: 1000;}
+  .chat-btn:hover {transform: scale(1.1); box-shadow: 0 8px 25px rgba(0,0,0,0.6);}
+  .chat-btn i {color:#fff; font-size:1.5rem;}
+
+  .section-nav {position: fixed; top: 100px; right: 20px; background: rgba(20,20,20,0.85); padding: 15px 20px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); display:flex; flex-direction: column; gap:10px; z-index:1000;}
+  .section-nav button {background:#ff9800; border:none; border-radius:25px; padding:8px 15px; color:#fff; font-weight:500; cursor:pointer; transition:0.3s;}
+  .section-nav button:hover {background:#e68900; transform:scale(1.05);}
+
+  @media (max-width:768px){
+    .profile-header {flex-direction:column; text-align:left;}
+    .section-nav {top: auto; bottom: 100px; right: 20px; flex-direction: row; flex-wrap: wrap;}
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <a href="bitm-alumni.html" class="back-btn">← Back to Directory</a>
+  
+  <div class="profile-header">
+    <!-- NO PROFILE PICTURE BLOCK -->
+    <div class="profile-info">
+      <h1 id="mentorName">Mentor Name</h1>
+      <p id="mentorBranchYear">Branch • Year</p>
+      <p id="mentorLocation">Location</p>
+      <span class="tag" id="mentorField">Field</span>
+    </div>
+  </div>
+
+  <div id="experienceSection" class="section">
+    <h2><i class="fas fa-briefcase"></i> Professional Experience</h2>
+    <div class="highlight-box" id="experience"></div>
+  </div>
+
+  <div id="jobSection" class="section">
+    <h2><i class="fas fa-sack-dollar"></i> Job & Role</h2>
+    <div class="highlight-box" id="job"></div>
+  </div>
+
+  <div id="projectsSection" class="section">
+    <h2><i class="fas fa-flask"></i> Projects & Research</h2>
+    <ul id="projects"></ul>
+  </div>
+
+  <div id="seminarsSection" class="section">
+    <h2><i class="fas fa-chalkboard-teacher"></i> Seminars Conducted</h2>
+    <ul id="seminars"></ul>
+  </div>
+
+  <div id="hackathonsSection" class="section">
+    <h2><i class="fas fa-trophy"></i> Hackathons Attended</h2>
+    <ul id="hackathons"></ul>
+  </div>
+
+  <div id="internshipsSection" class="section">
+    <h2><i class="fas fa-lightbulb"></i> Internship Guidance</h2>
+    <ul id="internships"></ul>
+  </div>
+
+  <div id="miniMajorSection" class="section">
+    <h2><i class="fas fa-project-diagram"></i> Mini & Major Projects</h2>
+    <ul id="miniMajorProjects"></ul>
+  </div>
+
+  <div id="qualificationsSection" class="section">
+    <h2><i class="fas fa-graduation-cap"></i> Qualifications</h2>
+    <ul id="qualifications"></ul>
+  </div>
+
+  <div id="languagesSection" class="section">
+    <h2><i class="fas fa-language"></i> Languages / Tech Stack</h2>
+    <ul id="languages"></ul>
+  </div>
+
+  <div id="achievementsSection" class="section">
+    <h2><i class="fas fa-award"></i> Achievements & Awards</h2>
+    <ul id="achievements"></ul>
+  </div>
+
+  <div class="contact-info">
+    <h2>Contact Information</h2>
+    <p>Email: <a id="mentorEmail" href="#">mentor@example.com</a></p>
+    <p>LinkedIn: <a id="mentorLinkedin" href="#" target="_blank">View Profile</a></p>
+  </div>
+</div>
+
+<div class="chat-btn" onclick="alert('Chat feature coming soon!')">
+  <i class="fas fa-comments"></i>
+</div>
+
+<div class="section-nav">
+  <button onclick="document.getElementById('experienceSection').scrollIntoView({behavior:'smooth'})">Experience</button>
+  <button onclick="document.getElementById('projectsSection').scrollIntoView({behavior:'smooth'})">Projects</button>
+  <button onclick="document.getElementById('internshipsSection').scrollIntoView({behavior:'smooth'})">Internships</button>
+  <button onclick="document.getElementById('achievementsSection').scrollIntoView({behavior:'smooth'})">Achievements</button>
+</div>
+
+<script>
+  const selectedMentor = JSON.parse(localStorage.getItem('selectedMentor'));
+
+  if (!selectedMentor) {
+    alert('No mentor selected. Redirecting back to directory.');
+    window.location.href = 'bitm-alumni.html';
+  } else {
+    document.getElementById('mentorName').textContent = selectedMentor.name;
+    document.getElementById('mentorBranchYear').textContent = `${selectedMentor.branch} • Class of ${selectedMentor.year}`;
+    document.getElementById('mentorLocation').textContent = selectedMentor.location;
+    document.getElementById('mentorField').textContent = selectedMentor.field;
+    document.getElementById('experience').textContent = selectedMentor.experience;
+    document.getElementById('job').textContent = selectedMentor.job;
+    document.getElementById('mentorEmail').textContent = selectedMentor.email;
+    document.getElementById('mentorEmail').href = `mailto:${selectedMentor.email}`;
+    document.getElementById('mentorLinkedin').href = selectedMentor.linkedin || '#';
+
+    function fillList(id, arr) {
+      const ul = document.getElementById(id);
+      ul.innerHTML = '';
+      (arr || []).forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        ul.appendChild(li);
+      });
+    }
+
+    fillList('projects', selectedMentor.projects);
+    fillList('seminars', selectedMentor.seminars);
+    fillList('hackathons', selectedMentor.hackathons);
+    fillList('internships', selectedMentor.internships);
+    fillList('miniMajorProjects', selectedMentor.miniMajorProjects);
+    fillList('qualifications', selectedMentor.qualifications);
+    fillList('languages', selectedMentor.languages);
+    fillList('achievements', selectedMentor.achievements);
+  }
+</script>
+
+</body>
+</html>

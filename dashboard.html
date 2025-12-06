@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard - Alumni Student Network</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  body, html {
+    height:100%;
+    background:url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80') no-repeat center center/cover;
+    color:#fff;
+    position:relative;
+  }
+  body::before {
+    content:''; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:0;
+  }
+  .container {
+    position:relative; z-index:1; max-width:1000px; margin:0 auto; padding:40px 20px;
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+  }
+
+  header {
+    width:100%; display:flex; align-items:center; justify-content:space-between; margin-bottom:50px;
+  }
+  .header-left { display:flex; align-items:center; gap:20px; }
+  header h1 { font-size:2rem; font-weight:700; color:#ffb347; text-shadow:1px 1px 4px rgba(0,0,0,0.7); }
+
+  .user-avatar {
+    width:50px; height:50px; border-radius:50%;
+    background:linear-gradient(135deg,#ff9800,#ffb347);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.3rem; font-weight:bold; color:white;
+    box-shadow:0 4px 12px rgba(255,152,0,0.6); text-transform:uppercase;
+    cursor:pointer; position:relative; transition:transform 0.3s ease;
+  }
+  .user-avatar:hover { transform:translateY(-5px) scale(1.1); }
+
+  .dropdown {
+    position:absolute; top:60px; left:0;
+    background:rgba(0,0,0,0.9);
+    border-radius:10px; min-width:180px;
+    display:none; flex-direction:column;
+    box-shadow:0 4px 20px rgba(0,0,0,0.5);
+    overflow:hidden; z-index:20;
+  }
+  .dropdown button {
+    background:none; border:none; color:#fff;
+    text-align:left; padding:12px 15px; width:100%;
+    cursor:pointer; font-size:1rem; transition:background 0.2s;
+  }
+  .dropdown button:hover { background:rgba(255,255,255,0.1); }
+
+  nav { display:flex; gap:15px; }
+  nav button {
+    background:#ff9800; border:none; padding:12px 20px;
+    border-radius:8px; font-weight:600; color:white;
+    cursor:pointer; box-shadow:0 4px 8px rgba(255,152,0,0.5);
+    transition:background 0.3s ease;
+  }
+  nav button:hover { background:#e68900; }
+
+  .welcome { text-align:center; margin-bottom:40px; }
+  .welcome h2 { font-size:2rem; margin-bottom:10px; text-shadow:1px 1px 6px rgba(0,0,0,0.8); }
+  .welcome p { font-size:1.2rem; color:#ddd; max-width:600px; margin:0 auto; text-shadow:1px 1px 4px rgba(0,0,0,0.6); }
+
+  .content {
+    background:rgba(255,255,255,0.15);
+    border-radius:15px; padding:30px 25px;
+    width:100%; max-width:900px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.3);
+    backdrop-filter:blur(8px); margin-bottom:40px;
+  }
+  .content h3 { margin-bottom:20px; text-shadow:1px 1px 4px rgba(0,0,0,0.7); }
+
+  ul { list-style:none; padding-left:0; }
+  li {
+    background:rgba(255,255,255,0.2);
+    padding:15px 20px; margin-bottom:15px;
+    border-radius:10px; box-shadow:inset 0 0 10px rgba(255,255,255,0.1);
+    font-size:1rem; display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap;
+  }
+
+  .task-input-container { display:flex; margin-bottom:20px; gap:10px; }
+  .task-input-container input {
+    flex:1; padding:10px 15px; border-radius:8px; border:none; outline:none; font-size:1rem;
+  }
+  .task-input-container button {
+    padding:10px 20px; border:none; border-radius:8px;
+    background:#ff9800; color:#fff; font-weight:bold;
+    cursor:pointer; transition:background 0.3s;
+  }
+  .task-input-container button:hover { background:#e68900; }
+
+  li .actions button {
+    background:#ff9800; border:none; border-radius:5px;
+    padding:5px 8px; color:#fff; cursor:pointer;
+    font-weight:bold; transition:background 0.2s;
+    margin-left:5px;
+  }
+  li .actions button:hover { background:#e68900; }
+
+  /* Folder-like sections using details/summary */
+  details {
+    margin-bottom:15px;
+    background:rgba(255,255,255,0.12);
+    border-radius:10px;
+    padding:10px 15px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.35);
+  }
+  details summary {
+    cursor:pointer;
+    font-weight:600;
+    font-size:1rem;
+    list-style:none;
+  }
+  details summary::-webkit-details-marker { display:none; }
+  details summary::before {
+    content:"📁 ";
+  }
+  details[open] summary::before {
+    content:"📂 ";
+  }
+  details ol {
+    margin-top:10px;
+    padding-left:18px;
+  }
+  details li {
+    background:rgba(255,255,255,0.12);
+    margin-bottom:8px;
+    padding:10px 12px;
+    font-size:0.95rem;
+    display:block;
+  }
+
+  .section-note {
+    font-size:0.9rem;
+    color:#f0e0ff;
+    margin-top:5px;
+  }
+
+  /* Scroll-to-top button */
+  #scrollTopBtn {
+    position:fixed;
+    bottom:30px;
+    right:30px;
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    border:none;
+    background:#ff9800;
+    color:#fff;
+    font-size:22px;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.4);
+    display:none;
+    z-index:50;
+    transition:background 0.3s, transform 0.2s;
+  }
+  #scrollTopBtn:hover {
+    background:#e68900;
+    transform:scale(1.08);
+  }
+
+  @media (max-width:600px) {
+    header h1 { font-size:1.4rem; }
+    .user-avatar { width:40px; height:40px; font-size:1rem; }
+    .welcome h2 { font-size:1.4rem; }
+    .welcome p { font-size:1rem; }
+    .content { padding:20px 15px; }
+  }
+</style>
+</head>
+
+<body>
+<div class="container">
+  <header>
+    <div class="header-left">
+      <div class="user-avatar" id="userAvatar">U
+        <div class="dropdown" id="avatarDropdown">
+          <button onclick="window.location.href='profile-setup.html'">Profile</button>
+          <button onclick="logout()">Logout</button>
+        </div>
+      </div>
+      <h1>Alumni-student Network</h1>
+    </div>
+    <nav>
+      <button onclick="window.location.href='directory hub.html'">Directory Hub</button>
+    </nav>
+  </header>
+
+  <section class="welcome">
+    <h2>Welcome back, <span id="username">User</span>!</h2>
+    <p>Connect, learn, and grow with the Alumni community. Add your daily schedule and manage your events efficiently.</p>
+  </section>
+
+  <!-- SCHEDULE SECTION -->
+  <section id="dashboard" class="content">
+    <h3>Upcoming Events & Daily Schedule</h3>
+    <div class="task-input-container">
+      <input type="text" id="taskInput" placeholder="Add a task or event...">
+      <button id="addTaskBtn">Add</button>
+    </div>
+    <ul id="tasksList"></ul>
+  </section>
+
+  <!-- APTITUDE SECTION -->
+  <section id="aptitudeSection" class="content">
+    <h3>Aptitude Practice Zone</h3>
+    <p class="section-note">
+      Try answering the questions first from the “Questions” folder.  
+      If you get stuck, open the “Answers” folder with the same question numbers.
+    </p>
+
+    <details>
+      <summary>Aptitude Questions (Sample – extend to 100+)</summary>
+      <ol>
+        <li><strong>Q1.</strong> A train travels at 60 km/h for 2.5 hours. How far does it travel?</li>
+        <li><strong>Q2.</strong> Find <em>¾</em> of <em>2/5</em> of 200.</li>
+        <li><strong>Q3.</strong> A number becomes 180 when increased by 20%. What is the original number?</li>
+        <li><strong>Q4.</strong> Simple interest on ₹5000 at 8% per annum for 2 years is how much?</li>
+        <li><strong>Q5.</strong> Divide ₹600 between A and B in the ratio 2:3. How much does B get?</li>
+        <li><strong>Q6.</strong> Find the average of 5, 7, 9, 11, 13.</li>
+        <li><strong>Q7.</strong> A can finish a work in 10 days, B in 15 days. In how many days will they finish together?</li>
+        <li><strong>Q8.</strong> If 15% of a number is 90, what is the number?</li>
+        <li><strong>Q9.</strong> Successive discounts of 10% and 20% are given on a marked price of ₹1000. What is the final selling price?</li>
+        <li><strong>Q10.</strong> Find the missing term in the series: 2, 6, 12, 20, 30, ?</li>
+        <!-- Continue Q11..Q100 same pattern if you want a huge bank -->
+      </ol>
+    </details>
+
+    <details>
+      <summary>Aptitude Answers (for Questions Above)</summary>
+      <ol>
+        <li><strong>A1.</strong> Distance = 60 × 2.5 = <strong>150 km</strong>.</li>
+        <li><strong>A2.</strong> (3/4) × (2/5) × 200 = 60.</li>
+        <li><strong>A3.</strong> 1.2x = 180 ⇒ x = <strong>150</strong>.</li>
+        <li><strong>A4.</strong> SI = (5000 × 8 × 2)/100 = <strong>₹800</strong>.</li>
+        <li><strong>A5.</strong> B gets (3/5) × 600 = <strong>₹360</strong>.</li>
+        <li><strong>A6.</strong> Average = 45/5 = <strong>9</strong>.</li>
+        <li><strong>A7.</strong> 1/10 + 1/15 = 5/30 = 1/6 ⇒ <strong>6 days</strong>.</li>
+        <li><strong>A8.</strong> 0.15x = 90 ⇒ x = <strong>600</strong>.</li>
+        <li><strong>A9.</strong> After 10%: 1000 × 0.9 = 900; then 900 × 0.8 = <strong>₹720</strong>.</li>
+        <li><strong>A10.</strong> Differences +4, +6, +8, +10, +12 ⇒ next = 30 + 12 = <strong>42</strong>.</li>
+      </ol>
+    </details>
+  </section>
+
+  <!-- CODING PRACTICE SECTION -->
+  <section id="codingSection" class="content">
+    <h3>Code Practice Zone (C & C++)</h3>
+    <p class="section-note">
+      Use these prompts to practice coding. Try in your own editor first.  
+      Then open the “Answers” folders to compare with one possible solution.
+    </p>
+
+    <!-- C LANGUAGE QUESTIONS -->
+    <details>
+      <summary>C Programming Questions (Sample Set)</summary>
+      <ol>
+        <li><strong>C-Q1.</strong> Write a C program to read <em>n</em> integers from the user and print their sum.</li>
+        <li><strong>C-Q2.</strong> Write a C program to check whether a given number is prime or not.</li>
+        <li><strong>C-Q3.</strong> Write a C program to reverse a given integer number (e.g., 1234 → 4321).</li>
+        <li><strong>C-Q4.</strong> Write a C program to count the number of vowels in a given string.</li>
+        <li><strong>C-Q5.</strong> Write a C program to find the largest of three numbers using <code>if-else</code>.</li>
+        <li><strong>C-Q6.</strong> Write a C program to compute the factorial of a number using a loop.</li>
+      </ol>
+    </details>
+
+    <details>
+      <summary>C Programming Answers (Sample Solutions)</summary>
+      <ol>
+        <li>
+          <strong>C-A1.</strong>
+          <pre><code>#include &lt;stdio.h&gt;
+
+int main() {
+    int n, i, x;
+    long long sum = 0;
+    printf("Enter count: ");
+    scanf("%d", &n);
+    for (i = 0; i &lt; n; i++) {
+        scanf("%d", &x);
+        sum += x;
+    }
+    printf("Sum = %lld\n", sum);
+    return 0;
+}</code></pre>
+        </li>
+
+        <li>
+          <strong>C-A2.</strong>
+          <pre><code>int isPrime(int n) {
+    if (n &lt;= 1) return 0;
+    for (int i = 2; i * i &lt;= n; i++) {
+        if (n % i == 0) return 0;
+    }
+    return 1;
+}</code></pre>
+        </li>
+
+        <li>
+          <strong>C-A3.</strong>
+          <pre><code>int reverse(int n) {
+    int rev = 0;
+    while (n != 0) {
+        int d = n % 10;
+        rev = rev * 10 + d;
+        n /= 10;
+    }
+    return rev;
+}</code></pre>
+        </li>
+
+        <li>
+          <strong>C-A4.</strong>
+          <pre><code>int countVowels(const char *s) {
+    int count = 0;
+    for (int i = 0; s[i] != '\0'; i++) {
+        char ch = s[i];
+        if (ch=='a'||ch=='e'||ch=='i'||ch=='o'||ch=='u'||
+            ch=='A'||ch=='E'||ch=='I'||ch=='O'||ch=='U') {
+            count++;
+        }
+    }
+    return count;
+}</code></pre>
+        </li>
+
+        <li>
+          <strong>C-A5.</strong>
+          <pre><code>int maxOfThree(int a, int b, int c) {
+    int max = a;
+    if (b &gt; max) max = b;
+    if (c &gt; max) max = c;
+    return max;
+}</code></pre>
+        </li>
+
+        <li>
+          <strong>C-A6.</strong>
+          <pre><code>long long fact(int n) {
+    long long f = 1;
+    for (int i = 1; i &lt;= n; i++) {
+        f *= i;
+    }
+    return f;
+}</code></pre>
+        </li>
+      </ol>
+    </details>
+
+    <!-- C++ LANGUAGE QUESTIONS -->
+    <details>
+      <summary>C++ Programming Questions (Sample Set)</summary>
+      <ol>
+        <li><strong>CPP-Q1.</strong> Write a C++ program using a <code>class Student</code> with data members <code>name</code>, <code>rollNo</code> and a method to print details.</li>
+        <li><strong>CPP-Q2.</strong> Write a C++ function (overloaded) to add two integers and two doubles.</li>
+        <li><strong>CPP-Q3.</strong> Write a C++ program that uses <code>std::vector&lt;int&gt;</code> to store <em>n</em> numbers and print their average.</li>
+        <li><strong>CPP-Q4.</strong> Write a C++ program to find the second largest element in an array.</li>
+        <li><strong>CPP-Q5.</strong> Write a recursive C++ function to compute <code>power(a, b)</code> (a raised to the power b).</li>
+        <li><strong>CPP-Q6.</strong> Implement a simple stack class in C++ using an array with <code>push</code> and <code>pop</code> operations.</li>
+      </ol>
+    </details>
+
+    <details>
+      <summary>C++ Programming Answers (Sample Solutions)</summary>
+      <ol>
+        <li>
+          <strong>CPP-A1.</strong>
+          <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+using namespace std;
+
+class Student {
+public:
+    string name;
+    int rollNo;
+
+    void print() {
+        cout &lt;&lt; "Name: " &lt;&lt; name &lt;&lt; "\nRoll No: " &lt;&lt; rollNo &lt;&lt; endl;
+    }
+};
+
+int main() {
+    Student s;
+    s.name = "Alice";
+    s.rollNo = 101;
+    s.print();
+    return 0;
+}</code></pre>
+        </li>
+
+        <li>
+          <strong>CPP-A2.</strong>
+          <pre><code>int add(int a, int b) {
+    return a + b;
+}
+
+double add(double a, double b) {
+    return a + b;
+}</code></pre>
+        </li>
+
+        <li>
+          <strong>CPP-A3.</strong>
+          <pre><code>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+using namespace std;
+
+int main() {
+    int n; cin &gt;&gt; n;
+    vector&lt;int&gt; v(n);
+    long long sum = 0;
+    for (int i = 0; i &lt; n; i++) {
+        cin &gt;&gt; v[i];
+        sum += v[i];
+    }
+    double avg = n ? (double)sum / n : 0.0;
+    cout &lt;&lt; "Average = " &lt;&lt; avg &lt;&lt; endl;
+    return 0;
+}</code></pre>
+        </li>
+
+        <li>
+          <strong>CPP-A4.</strong>
+          <pre><code>int secondLargest(const vector&lt;int&gt;& r) {
+    if (r.size() &lt; 2) return -1;
+    int max1 = INT_MIN, max2 = INT_MIN;
+    for (int x : r) {
+        if (x &gt; max1) {
+            max2 = max1;
+            max1 = x;
+        } else if (x &gt; max2 && x != max1) {
+            max2 = x;
+        }
+    }
+    return max2;
+}</code></pre>
+        </li>
+
+        <li>
+          <strong>CPP-A5.</strong>
+          <pre><code>long long power(long long a, int b) {
+    if (b == 0) return 1;
+    if (b % 2 == 0) {
+        long long half = power(a, b / 2);
+        return half * half;
+    }
+    return a * power(a, b - 1);
+}</code></pre>
+        </li>
+
+        <li>
+          <strong>CPP-A6.</strong>
+          <pre><code>class Stack {
+    int arr[100];
+    int top;
+public:
+    Stack() { top = -1; }
+
+    bool push(int x) {
+        if (top == 99) return false;
+        arr[++top] = x;
+        return true;
+    }
+
+    bool pop(int &x) {
+        if (top == -1) return false;
+        x = arr[top--];
+        return true;
+    }
+
+    bool isEmpty() const { return top == -1; }
+};</code></pre>
+        </li>
+      </ol>
+    </details>
+  </section>
+
+  <!-- NEW INTERVIEW QUESTIONS SECTION -->
+  <section id="interviewSection" class="content">
+    <h3>Interview Questions by Company</h3>
+    <p class="section-note">
+      These are sample fresher-style questions inspired by common interview patterns of each company.  
+      Treat them like real interview prompts and practice answering out loud or in a notebook.
+    </p>
+
+    <!-- INFOSYS -->
+    <details>
+      <summary>Infosys – Sample Interview Questions</summary>
+      <ol>
+        <li>Explain the four pillars of Object-Oriented Programming with examples.</li>
+        <li>What is the difference between <code>Array</code> and <code>Linked List</code>?</li>
+        <li>Explain normalization in DBMS. Why is it needed?</li>
+        <li>What are joins in SQL? Explain INNER JOIN and LEFT JOIN with a simple example.</li>
+        <li>Given an array of integers, write logic to find the first repeating element.</li>
+        <li>Explain the difference between stack and queue with real-life analogies.</li>
+        <li>What is the difference between compile-time error and runtime error?</li>
+        <li>Describe your final year project: problem statement, tech stack, and your contribution.</li>
+        <li>Why do you want to join Infosys as a fresher?</li>
+        <li>Tell me about a time you worked in a team and faced a conflict. How did you resolve it?</li>
+      </ol>
+    </details>
+
+    <!-- WIPRO -->
+    <details>
+      <summary>Wipro – Sample Interview Questions</summary>
+      <ol>
+        <li>Explain the difference between <code>C</code> and <code>C++</code>.</li>
+        <li>What is recursion? Write logic to compute the nth Fibonacci number.</li>
+        <li>How does bubble sort work? What is its time complexity?</li>
+        <li>Write pseudocode to check if a string is a palindrome.</li>
+        <li>What is a primary key and foreign key in a database?</li>
+        <li>Explain OS concepts: process vs thread, and context switching.</li>
+        <li>What are the different types of software testing?</li>
+        <li>Explain any situation where you had to learn a new technology quickly.</li>
+        <li>Why do you think you are a good fit for Wipro?</li>
+        <li>Where do you see yourself professionally in the next 3–5 years?</li>
+      </ol>
+    </details>
+
+    <!-- DELOITTE -->
+    <details>
+      <summary>Deloitte – Sample Interview Questions</summary>
+      <ol>
+        <li>Explain SDLC (Software Development Life Cycle). Which model do you prefer and why?</li>
+        <li>What is the difference between REST and SOAP web services?</li>
+        <li>Explain the concept of exception handling in any language you know.</li>
+        <li>What is the purpose of indexes in a database? When can they be harmful?</li>
+        <li>Describe a scenario where you optimized a piece of code or query.</li>
+        <li>How would you explain cloud computing to a non-technical client?</li>
+        <li>Tell me about a challenging project or academic task and how you handled it.</li>
+        <li>How do you manage tight deadlines when multiple tasks are assigned?</li>
+        <li>Why consulting / why Deloitte specifically?</li>
+        <li>Deloitte works closely with clients. How would you handle a client who keeps changing requirements?</li>
+      </ol>
+    </details>
+
+    <!-- COGNIZANT -->
+    <details>
+      <summary>Cognizant (GenC) – Sample Interview Questions</summary>
+      <ol>
+        <li>What is the difference between a database and a DBMS?</li>
+        <li>Explain OOP concepts and give real-world examples for inheritance and polymorphism.</li>
+        <li>Write high-level logic to find the second largest element in an array.</li>
+        <li>What is normalization? Explain 1NF, 2NF, and 3NF in brief.</li>
+        <li>What are the main differences between <code>GET</code> and <code>POST</code> HTTP methods?</li>
+        <li>Explain a technical project you worked on and the major challenges you faced.</li>
+        <li>How would you debug a program that is not giving expected output?</li>
+        <li>Why should Cognizant hire you over other candidates?</li>
+        <li>How do you keep your technical knowledge up to date?</li>
+        <li>Describe a time when you took initiative in a team or college activity.</li>
+      </ol>
+    </details>
+
+    <!-- MICROSOFT -->
+    <details>
+      <summary>Microsoft – Sample Interview Questions</summary>
+      <ol>
+        <li>Given a sorted array, write logic to perform binary search. What is its time complexity?</li>
+        <li>Explain the difference between <code>ArrayList</code> and <code>LinkedList</code> (or vector vs list) in terms of complexity.</li>
+        <li>Design a data structure to implement a queue using two stacks.</li>
+        <li>Given a string, find the first non-repeating character.</li>
+        <li>Explain the concept of hashing and common collision resolution strategies.</li>
+        <li>What happens in memory when you create an object in your favourite language?</li>
+        <li>How would you design a URL shortener (high-level design)?</li>
+        <li>Tell me about a time you received critical feedback. How did you handle it?</li>
+        <li>Describe a time you had to collaborate with someone who disagreed with your idea.</li>
+        <li>Why do you want to work at Microsoft?</li>
+      </ol>
+    </details>
+
+    <!-- GOOGLE -->
+    <details>
+      <summary>Google – Sample Interview Questions</summary>
+      <ol>
+        <li>Given an array of integers, find all pairs that sum to a given value K.</li>
+        <li>Explain time and space complexity of your solution above.</li>
+        <li>How would you detect a cycle in a linked list?</li>
+        <li>Explain the difference between BFS and DFS. When would you use each?</li>
+        <li>What is a race condition? How can you avoid it in multithreaded programs?</li>
+        <li>Design a simple system to store and search contacts by name and phone number.</li>
+        <li>Describe an engineering problem you faced where there was no obvious solution.</li>
+        <li>Tell me about a time you made a mistake in a project and how you recovered from it.</li>
+        <li>How would you explain Big-O notation to a non-technical person?</li>
+        <li>Why Google, and what team would you like to work with if you had a choice?</li>
+      </ol>
+    </details>
+
+    <!-- AMAZON -->
+    <details>
+      <summary>Amazon – Sample Interview Questions</summary>
+      <ol>
+        <li>Given an array of stock prices, find the maximum profit possible with one buy and one sell.</li>
+        <li>Explain how you would use a hash map to count frequencies of elements in an array.</li>
+        <li>What is a deadlock? What are the necessary conditions for deadlock?</li>
+        <li>Design an API for an online bookstore – what endpoints would you define?</li>
+        <li>Explain Amazon’s “Customer Obsession” leadership principle and give an example from your life.</li>
+        <li>Tell me about a time you had to deal with incomplete or ambiguous requirements.</li>
+        <li>Describe a time when you had to prioritize between multiple high-importance tasks.</li>
+        <li>What is the difference between horizontal and vertical scaling?</li>
+        <li>How would you test a feature that recommends products to users?</li>
+        <li>Why are you interested in working at Amazon as a fresher?</li>
+      </ol>
+    </details>
+  </section>
+</div>
+
+<!-- Scroll-to-top button -->
+<button id="scrollTopBtn" aria-label="Scroll to top">⬆</button>
+
+<script>
+const user = JSON.parse(localStorage.getItem('loggedInUser')) || {name:'User', email:'user@example.com'};
+const userName = user.name || user.email.split('@')[0];
+document.getElementById('username').textContent = userName;
+const initials = userName.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+document.getElementById('userAvatar').childNodes[0].textContent = initials;
+
+const avatar = document.getElementById('userAvatar');
+const dropdown = document.getElementById('avatarDropdown');
+avatar.addEventListener('click', (e)=>{
+  dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+  dropdown.style.flexDirection = 'column';
+});
+document.addEventListener('click', e=>{
+  if(!avatar.contains(e.target)){ dropdown.style.display = 'none'; }
+});
+function logout() {
+  localStorage.removeItem('loggedInUser');
+  alert('You have been logged out!');
+  window.location.href='login.html';
+}
+
+// Task Functionality
+const taskInput = document.getElementById('taskInput');
+const addTaskBtn = document.getElementById('addTaskBtn');
+const tasksList = document.getElementById('tasksList');
+let tasks = JSON.parse(localStorage.getItem('dailyTasks')) || [
+  "Mentorship Webinar - Oct 15, 2025",
+  "Networking Meetup - Nov 5, 2025",
+  "Career Guidance Session - Dec 1, 2025"
+];
+
+function saveTasks(){ localStorage.setItem('dailyTasks', JSON.stringify(tasks)); }
+
+function renderTasks(){
+  tasksList.innerHTML = '';
+  tasks.forEach((task,index)=>{
+    const li = document.createElement('li');
+
+    const taskSpan = document.createElement('span');
+    taskSpan.textContent = task;
+    taskSpan.style.flex = "1";
+    li.appendChild(taskSpan);
+
+    const actions = document.createElement('div');
+    actions.classList.add('actions');
+
+    const editBtn = document.createElement('button');
+    editBtn.textContent = '✏️';
+    editBtn.onclick = ()=>{
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.value = task;
+      input.style.flex = "1";
+      li.replaceChild(input, taskSpan);
+
+      editBtn.style.display = 'none';
+      const saveBtn = document.createElement('button');
+      saveBtn.textContent = '💾';
+      actions.insertBefore(saveBtn, delBtn);
+
+      saveBtn.onclick = ()=>{
+        const updated = input.value.trim();
+        if(updated){
+          tasks[index] = updated;
+          saveTasks();
+          renderTasks();
+        }
+      };
+    };
+
+    const delBtn = document.createElement('button');
+    delBtn.textContent = '✖';
+    delBtn.onclick = ()=>{
+      tasks.splice(index,1);
+      saveTasks();
+      renderTasks();
+    };
+
+    actions.appendChild(editBtn);
+    actions.appendChild(delBtn);
+    li.appendChild(actions);
+    tasksList.appendChild(li);
+  });
+}
+
+addTaskBtn.addEventListener('click', ()=>{
+  const task = taskInput.value.trim();
+  if(task){
+    tasks.push(task);
+    taskInput.value='';
+    saveTasks();
+    renderTasks();
+  }
+});
+taskInput.addEventListener('keypress', e=>{ if(e.key==='Enter') addTaskBtn.click(); });
+
+renderTasks();
+
+// Scroll-to-top logic
+const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 200) {
+    scrollTopBtn.style.display = 'block';
+  } else {
+    scrollTopBtn.style.display = 'none';
+  }
+});
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+scrollTopBtn.addEventListener('click', scrollToTop);
+</script>
+</body>
+</html>

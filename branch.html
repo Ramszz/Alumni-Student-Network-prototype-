@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Branch Notes | Alumni Student Network</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+  body { background: #f5f5f5; color: #333; }
+
+  nav {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    background: rgba(0,0,0,0.9);
+    color: #fff;
+    z-index: 1000;
+  }
+  nav h1 { font-size: 22px; }
+  nav button {
+    background: #ff9800;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  nav button:hover { background: #e68900; }
+
+  .container {
+    max-width: 1100px;
+    margin: 30px auto 40px;
+    padding: 0 20px;
+  }
+
+  .branch-title {
+    font-size: 28px;
+    margin-bottom: 4px;
+  }
+  .branch-meta {
+    font-size: 13px;
+    color: #777;
+    margin-bottom: 20px;
+  }
+
+  .semester-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 18px;
+  }
+
+  .semester-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px 14px 12px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+  }
+
+  .semester-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .subject-list {
+    list-style: none;
+    font-size: 14px;
+  }
+  .subject-list li {
+    padding: 4px 0;
+    border-bottom: 1px dashed #eee;
+  }
+  .subject-list li:last-child {
+    border-bottom: none;
+  }
+
+  .subject-list span.code {
+    font-weight: 700;
+    margin-right: 4px;
+  }
+
+  .note-placeholder {
+    font-size: 12px;
+    color: #999;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 13px;
+    color: #777;
+    padding: 10px 0 25px;
+  }
+
+  @media (max-width: 768px) {
+    nav {
+      padding: 12px 16px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <h1 id="branchNavTitle">Branch Notes</h1>
+  <button onclick="window.location.href='notes.html'">⬅ Back to Branches</button>
+</nav>
+
+<div class="container">
+  <h2 class="branch-title" id="branchHeading">Branch</h2>
+  <p class="branch-meta" id="branchMeta">
+    Semester-wise subjects. Update names as per your university syllabus.
+  </p>
+
+  <div class="semester-grid" id="semesterGrid">
+    <!-- Filled by JS -->
+  </div>
+</div>
+
+<footer>
+  Tip: attach Google Drive / PDF / YouTube links per subject later.
+</footer>
+
+<script>
+  // ====== SUBJECT DATA (EDIT THIS FOR REAL SUBJECTS) ======
+  const subjectsData = {
+    CSE: {
+      fullName: "Computer Science & Engineering",
+      semesters: {
+        "1st Semester": [
+          "Mathematics-I",
+          "Engineering Physics / Chemistry",
+          "Basic Electrical / Electronics",
+          "Programming in C",
+          "Engineering Graphics"
+        ],
+        "2nd Semester": [
+          "Mathematics-II",
+          "Data Structures",
+          "Digital Logic Design",
+          "Object Oriented Programming",
+          "Environmental Studies"
+        ],
+        "3rd Semester": [
+          "Discrete Mathematics",
+          "Computer Organization",
+          "Data Structures & Algorithms",
+          "Database Management Systems",
+          "Unix / OS Basics"
+        ],
+        "4th Semester": [
+          "Design & Analysis of Algorithms",
+          "Operating Systems",
+          "Software Engineering",
+          "Computer Networks",
+          "Professional Elective - 1"
+        ]
+      }
+    },
+    ECE: {
+      fullName: "Electronics & Communication Engineering",
+      semesters: {
+        "1st Semester": [
+          "Mathematics-I",
+          "Basic Electrical Engineering",
+          "Applied Physics",
+          "Programming in C",
+          "Engineering Drawing"
+        ],
+        "2nd Semester": [
+          "Mathematics-II",
+          "Network Theory",
+          "Electronic Devices",
+          "Signals & Systems",
+          "Engineering Chemistry"
+        ],
+        "3rd Semester": [
+          "Analog Circuits",
+          "Digital Electronics",
+          "Electromagnetic Theory",
+          "Control Systems",
+          "Probability & Random Processes"
+        ],
+        "4th Semester": [
+          "Microprocessors & Microcontrollers",
+          "Communication Systems",
+          "VLSI Basics",
+          "Digital Signal Processing",
+          "Open Elective"
+        ]
+      }
+    },
+    EEE: {
+      fullName: "Electrical & Electronics Engineering",
+      semesters: {
+        "1st Semester": [
+          "Mathematics-I",
+          "Engineering Physics",
+          "Basic Electrical Engineering",
+          "Engineering Graphics",
+          "Programming in C"
+        ],
+        "2nd Semester": [
+          "Mathematics-II",
+          "Network Analysis",
+          "Electronic Devices",
+          "Electrical Machines-I",
+          "Professional Communication"
+        ],
+        "3rd Semester": [
+          "Electrical Machines-II",
+          "Power Systems-I",
+          "Control Systems",
+          "Measurements & Instrumentation",
+          "Numerical Methods"
+        ],
+        "4th Semester": [
+          "Power Systems-II",
+          "Power Electronics",
+          "Microcontrollers",
+          "Switchgear & Protection",
+          "Open Elective"
+        ]
+      }
+    },
+    AIML: {
+      fullName: "Artificial Intelligence & Machine Learning",
+      semesters: {
+        "1st Semester": [
+          "Mathematics-I",
+          "Programming in C / Python",
+          "Digital Fundamentals",
+          "Basic Electrical / Electronics",
+          "Communication Skills"
+        ],
+        "2nd Semester": [
+          "Mathematics-II",
+          "Data Structures",
+          "Object Oriented Programming",
+          "Computer Organization",
+          "Probability & Statistics"
+        ],
+        "3rd Semester": [
+          "Discrete Mathematics",
+          "Database Systems",
+          "Introduction to AI",
+          "Data Mining",
+          "Linear Algebra for ML"
+        ],
+        "4th Semester": [
+          "Machine Learning",
+          "Deep Learning Basics",
+          "Natural Language Processing",
+          "Computer Vision",
+          "Ethics in AI"
+        ]
+      }
+    },
+    CIVIL: {
+      fullName: "Civil Engineering",
+      semesters: {
+        "1st Semester": [
+          "Mathematics-I",
+          "Engineering Mechanics",
+          "Engineering Physics",
+          "Engineering Graphics",
+          "Basic Civil Engineering"
+        ],
+        "2nd Semester": [
+          "Mathematics-II",
+          "Strength of Materials",
+          "Surveying-I",
+          "Building Materials",
+          "Environmental Engineering Basics"
+        ],
+        "3rd Semester": [
+          "Structural Analysis-I",
+          "Concrete Technology",
+          "Geotechnical Engineering-I",
+          "Surveying-II",
+          "Fluid Mechanics"
+        ],
+        "4th Semester": [
+          "Structural Analysis-II",
+          "Design of RC Structures",
+          "Geotechnical Engineering-II",
+          "Transportation Engineering",
+          "Hydrology & Water Resources"
+        ]
+      }
+    },
+    MECH: {
+      fullName: "Mechanical Engineering",
+      semesters: {
+        "1st Semester": [
+          "Mathematics-I",
+          "Engineering Physics",
+          "Engineering Graphics",
+          "Basic Mechanical Engineering",
+          "Programming in C"
+        ],
+        "2nd Semester": [
+          "Mathematics-II",
+          "Engineering Thermodynamics",
+          "Material Science",
+          "Mechanics of Solids",
+          "Workshop Practice"
+        ],
+        "3rd Semester": [
+          "Kinematics of Machines",
+          "Fluid Mechanics",
+          "Manufacturing Processes",
+          "Machine Drawing",
+          "Numerical Methods"
+        ],
+        "4th Semester": [
+          "Dynamics of Machines",
+          "Heat Transfer",
+          "Design of Machine Elements",
+          "Industrial Engineering",
+          "Open Elective"
+        ]
+      }
+    },
+    IT: {
+      fullName: "Information Technology",
+      semesters: {
+        "1st Semester": [
+          "Mathematics-I",
+          "Programming in C",
+          "Digital Logic",
+          "Basic Electronics",
+          "Professional Communication"
+        ],
+        "2nd Semester": [
+          "Mathematics-II",
+          "Data Structures",
+          "Computer Organization",
+          "Database Systems",
+          "Web Technologies Basics"
+        ],
+        "3rd Semester": [
+          "Operating Systems",
+          "Computer Networks",
+          "Object Oriented Programming",
+          "Software Engineering",
+          "Probability & Statistics"
+        ],
+        "4th Semester": [
+          "Design & Analysis of Algorithms",
+          "Information Security",
+          "Web Technologies",
+          "Cloud Computing Basics",
+          "Open Elective"
+        ]
+      }
+    },
+    CHE: {
+      fullName: "Chemical Engineering",
+      semesters: {
+        "1st Semester": [
+          "Mathematics-I",
+          "Engineering Chemistry",
+          "Basic Mechanical",
+          "Engineering Graphics",
+          "Programming in C"
+        ],
+        "2nd Semester": [
+          "Mathematics-II",
+          "Chemical Process Calculations",
+          "Fluid Mechanics",
+          "Material & Energy Balance",
+          "Environmental Studies"
+        ],
+        "3rd Semester": [
+          "Heat Transfer Operations",
+          "Mass Transfer Operations-I",
+          "Thermodynamics",
+          "Mechanical Operations",
+          "Numerical Methods"
+        ],
+        "4th Semester": [
+          "Mass Transfer Operations-II",
+          "Chemical Reaction Engineering-I",
+          "Process Instrumentation",
+          "Process Dynamics & Control",
+          "Open Elective"
+        ]
+      }
+    }
+  };
+
+  // ====== HELPER: get query param ======
+  function getQueryParam(name) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name);
+  }
+
+  function renderPage() {
+    const branchCode = getQueryParam('branch') || 'CSE';
+    const data = subjectsData[branchCode];
+
+    const branchHeading = document.getElementById('branchHeading');
+    const branchMeta = document.getElementById('branchMeta');
+    const semesterGrid = document.getElementById('semesterGrid');
+    const branchNavTitle = document.getElementById('branchNavTitle');
+
+    if (!data) {
+      branchHeading.textContent = 'Unknown Branch';
+      branchMeta.textContent = 'Branch not found. Please go back and choose again.';
+      semesterGrid.innerHTML = '';
+      branchNavTitle.textContent = 'Branch Notes';
+      return;
+    }
+
+    branchHeading.textContent = branchCode + ' - ' + data.fullName;
+    branchMeta.textContent = 'Subjects grouped semester-wise. Edit this page to add note links, PDFs, or Drive URLs.';
+    branchNavTitle.textContent = branchCode + ' Notes';
+
+    semesterGrid.innerHTML = '';
+
+    Object.entries(data.semesters).forEach(([semName, subjects]) => {
+      const card = document.createElement('div');
+      card.className = 'semester-card';
+
+      const title = document.createElement('div');
+      title.className = 'semester-title';
+      title.textContent = semName;
+
+      const ul = document.createElement('ul');
+      ul.className = 'subject-list';
+
+      subjects.forEach((subj, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="code">S${index + 1}.</span> ${subj}<div class="note-placeholder">[Add note links here]</div>`;
+        ul.appendChild(li);
+      });
+
+      card.appendChild(title);
+      card.appendChild(ul);
+
+      semesterGrid.appendChild(card);
+    });
+  }
+
+  renderPage();
+</script>
+
+</body>
+</html>

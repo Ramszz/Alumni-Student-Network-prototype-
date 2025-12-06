@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Students by College - Alumni-Student Network</title>
+<style>
+  :root {
+    --accent: #ff9800;
+    --card-bg: rgba(255,255,255,0.95);
+    --muted: #666;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    margin:0;
+    padding:40px 20px;
+    min-height:100vh;
+    background-image: url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    color: #111;
+  }
+
+  body::before {
+    content:"";
+    position: fixed;
+    inset:0;
+    background: rgba(12,18,25,0.55);
+    z-index:0;
+    pointer-events:none;
+  }
+
+  .wrap {
+    position: relative;
+    z-index:1;
+    max-width: 900px;
+    margin:0 auto;
+  }
+
+  /* Header */
+  h1 { color:#fff; margin:0; font-size:1.6rem; }
+  .subtitle { color: #e6e6e6; margin-top:6px; }
+  .count-pill {
+    margin-top:6px;
+    padding:4px 10px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.15);
+    color:#fff;
+    font-size:0.8rem;
+    display:inline-block;
+  }
+
+  /* Student list cards */
+  #list { margin-top:20px; }
+  .card {
+    background: var(--card-bg);
+    padding:14px;
+    border-radius:10px;
+    margin-bottom:12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+  }
+
+  .meta b { font-size:1.05rem; color:#0b1220; }
+  .meta small { color: var(--muted); }
+  .bio { margin-top:8px; font-size:0.95rem; color:#334155; }
+
+  .view-btn {
+    padding:7px 12px;
+    background:#111827;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+  }
+
+  .empty {
+    color:#e6e6e6;
+    padding:40px 16px;
+    text-align:center;
+    background: rgba(15,23,42,0.7);
+    border-radius:10px;
+    margin-top:18px;
+  }
+
+  /* Back links */
+  .nav-links a {
+    margin-right:10px;
+    color:#fff;
+    text-decoration:none;
+    font-size:0.9rem;
+    padding:4px 10px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.3);
+  }
+  .nav-links a:hover {
+    background:rgba(255,255,255,0.15);
+  }
+
+  /* Scroll to top button */
+  .top-btn {
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:50%;
+    width:48px;
+    height:48px;
+    cursor:pointer;
+    font-size:20px;
+    display:none;
+  }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <h1 id="collegeName">College Students</h1>
+  <div class="subtitle">Students who registered under this college.</div>
+  <div class="count-pill" id="studentCount"></div>
+
+  <div class="nav-links">
+    <a href="student-directory.html">← Back to Hub</a>
+    <a href="dashboard.html">Dashboard</a>
+  </div>
+
+  <div id="list"></div>
+
+</div>
+
+<button id="toTop" class="top-btn">↑</button>
+
+<script>
+(function(){
+
+  function getList(key){
+    try { return JSON.parse(localStorage.getItem(key)) || []; }
+    catch { return []; }
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const collegeParam = params.get("college");
+
+  const collegeTitle = document.getElementById("collegeName");
+  const studentCount = document.getElementById("studentCount");
+  const listEl = document.getElementById("list");
+
+  if(!collegeParam){
+    collegeTitle.textContent = "No College Selected";
+    listEl.innerHTML = '<div class="empty">College name missing in the link.</div>';
+    return;
+  }
+
+  const collegeName = decodeURIComponent(collegeParam);
+  collegeTitle.textContent = collegeName;
+
+  function escapeHtml(s){
+    return s ? s.replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;" }[c])) : "";
+  }
+
+  function render(){
+    const students = getList("students");
+    const filtered = students.filter(s => (s.college || "").toLowerCase() === collegeName.toLowerCase());
+
+    studentCount.textContent =
+      filtered.length ? `${filtered.length} student(s) found` : "No students yet";
+
+    if(!filtered.length){
+      listEl.innerHTML = '<div class="empty">No students registered under this college.</div>';
+      return;
+    }
+
+    listEl.innerHTML = filtered.map(s => `
+      <div class="card">
+        <div class="meta">
+          <b>${escapeHtml(s.name)}</b>
+          <small>${escapeHtml(s.email)}</small>
+          <div class="bio">${escapeHtml(s.bio || "No bio provided")}</div>
+        </div>
+        <button class="view-btn" onclick="alert('Name: ${escapeHtml(s.name)}\\nEmail: ${escapeHtml(s.email)}\\nBio: ${escapeHtml(s.bio || "—")}')">View</button>
+      </div>
+    `).join("");
+  }
+
+  render();
+
+  // Scroll top button
+  const btn = document.getElementById("toTop");
+  window.addEventListener("scroll", () => {
+    btn.style.display = window.scrollY > 200 ? "block" : "none";
+  });
+  btn.onclick = () => window.scrollTo({top:0, behavior:"smooth"});
+
+})();
+</script>
+
+</body>
+</html>

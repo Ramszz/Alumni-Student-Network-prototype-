@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Sign Up - NIT Alumni Mentor Connect</title>
+
+  <!-- TailwindCSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="h-full relative">
+
+  <!-- Loading Overlay (Hidden by default) -->
+  <div id="loadingScreen"
+    class="fixed inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center 
+           text-white text-xl space-y-4 z-50 hidden">
+
+    <div class="animate-spin rounded-full h-16 w-16 border-4 border-white border-t-transparent"></div>
+    <p class="text-amber-300 font-semibold">Redirecting to Dashboard...</p>
+  </div>
+
+  <!-- Background Image + Overlay -->
+  <div class="relative h-screen w-full 
+      bg-cover bg-center bg-no-repeat"
+    style="background-image: url('https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg');">
+
+    <!-- Dark overlay -->
+    <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+
+    <!-- Signup container -->
+    <div class="relative z-10 h-full flex items-center justify-center px-4">
+
+      <div class="w-full max-w-sm 
+          bg-white/20 backdrop-blur-xl 
+          shadow-2xl rounded-2xl 
+          p-8 text-white">
+
+        <h1 class="text-3xl font-semibold text-center text-amber-300 mb-6">
+          Create Account
+        </h1>
+
+        <div class="space-y-4">
+          <input id="name" type="text"
+            placeholder="Full Name" required
+            class="w-full px-3 py-2 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-amber-300 outline-none">
+
+          <input id="email" type="email"
+            placeholder="Email" required
+            class="w-full px-3 py-2 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-amber-300 outline-none">
+
+          <input id="password" type="password"
+            placeholder="Password" required
+            class="w-full px-3 py-2 rounded-lg text-gray-900 bg-white focus:ring-2 focus:ring-amber-300 outline-none">
+
+          <button onclick="signup()"
+            class="w-full py-2 rounded-lg font-semibold 
+            bg-gradient-to-r from-amber-500 to-orange-400 
+            hover:scale-105 transition">
+            Sign Up
+          </button>
+        </div>
+
+        <p class="text-center text-sm mt-4">
+          Already have an account?
+          <a href="login.html" class="text-amber-300 font-semibold hover:underline">
+            Login
+          </a>
+        </p>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Signup Script -->
+  <script>
+    function showLoading() {
+      document.getElementById('loadingScreen').classList.remove('hidden');
+    }
+
+    function signup() {
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value.trim();
+
+      if (!name || !email || !password) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      const allUsers = JSON.parse(localStorage.getItem('allUsers')) || [];
+      const exists = allUsers.find(u => u.email === email);
+
+      if (exists) {
+        alert('User already exists. Please login instead.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      allUsers.push({ name, email, password });
+      localStorage.setItem('allUsers', JSON.stringify(allUsers));
+      localStorage.setItem('loggedInUser', JSON.stringify({ name, email }));
+
+      // Show loading animation before redirect
+      showLoading();
+
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 1500);
+    }
+  </script>
+
+</body>
+</html>

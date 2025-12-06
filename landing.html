@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title> Alumni student Network</title>
+<meta name="description" content="Alumni student Network: Connect with mentors, grow professionally, and inspire the next generation at NIT.">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+  body, html { scroll-behavior: smooth; color: #333; height: 100%; }
+
+  /* Navbar */
+  nav {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    background: rgba(0,0,0,0.75);
+    z-index: 1000;
+  }
+  nav h1 { color: #fff; font-size: 26px; }
+  .nav-buttons button {
+    background: #ff9800;
+    border: none;
+    padding: 10px 22px;
+    margin-left: 12px;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: background 0.3s;
+    cursor: pointer;
+  }
+  .nav-buttons button:hover { background-color: #e68900; }
+
+  /* Hero Section */
+  .hero {
+    height: 100vh;
+    background:
+      linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+      url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwwQBcRdp0DBcC17eoU0fj1XrHqoxv4AL2-Q&s') no-repeat center center / cover;
+    background-attachment: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #fff;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .hero h2 { font-size: 52px; margin-bottom: 20px; text-shadow: 2px 2px 10px rgba(0,0,0,0.7); }
+  .typed-text { color: #ff9800; font-weight: bold; }
+  .hero p { font-size: 20px; max-width: 650px; margin-bottom: 30px; text-shadow: 1px 1px 5px rgba(0,0,0,0.7); }
+  .hero .cta button {
+    background: #2196f3;
+    padding: 14px 28px;
+    font-size: 20px;
+    border-radius: 6px;
+    color: #fff;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .hero .cta button:hover { background: #1976d2; }
+
+  /* Features Section */
+  .features { padding: 100px 40px; background: #f4f4f4; text-align: center; }
+  .features h3 { font-size: 40px; margin-bottom: 40px; color: #333; }
+  .feature-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; }
+  .feature {
+    background: #fff;
+    padding: 30px;
+    width: 300px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s, opacity 0.5s;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .feature img { width: 80px; height: 80px; margin-bottom: 20px; }
+  .feature h4 { font-size: 22px; margin-bottom: 12px; }
+  .feature p { font-size: 16px; color: #555; }
+  .feature:hover { transform: translateY(-10px); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
+
+  /* Footer */
+  footer { background: #222; color: #fff; text-align: center; padding: 25px 0; }
+
+  /* Scroll-to-top button */
+  #scrollTopBtn {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    z-index: 999;
+    background: #ff9800;
+    color: #fff;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 50%;
+    font-size: 22px;
+    display: none;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: background 0.3s, transform 0.3s;
+  }
+  #scrollTopBtn:hover { background: #e68900; transform: scale(1.1); }
+
+  /* === GPA SMALL CIRCLE ICON & DROPDOWN === */
+  .gpa-toggle-btn {
+    position: fixed;
+    top: 90px;      /* below navbar */
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: #ff9800;
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .gpa-toggle-btn:hover {
+    background: #e68900;
+    transform: scale(1.05);
+  }
+
+  .gpa-dropdown {
+    position: fixed;
+    top: 150px;
+    left: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    padding: 6px 0;
+    z-index: 1100;
+    display: none;
+    min-width: 160px;
+  }
+  .gpa-dropdown button {
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    padding: 8px 14px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .gpa-dropdown button:hover {
+    background: #f3f3f3;
+  }
+
+  /* === GPA PANEL (CALCULATORS) === */
+  .gpa-panel {
+    position: fixed;
+    top: 210px;
+    left: 20px;
+    width: 280px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    padding: 10px 16px 14px;
+    z-index: 1100;
+    display: none;
+  }
+
+  .gpa-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .gpa-back-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+  }
+
+  .gpa-panel-header h3 {
+    font-size: 18px;
+    margin-bottom: 0;
+    color: #333;
+  }
+
+  .gpa-panel small {
+    font-size: 11px;
+    color: #777;
+  }
+
+  .gpa-tabs {
+    display: flex;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    gap: 4px;
+  }
+  .gpa-tabs button {
+    flex: 1;
+    border: none;
+    padding: 6px 4px;
+    font-size: 13px;
+    cursor: pointer;
+    background: #eeeeee;
+    border-radius: 6px;
+  }
+  .gpa-tabs button.active {
+    background: #2196f3;
+    color: #ffffff;
+    font-weight: bold;
+  }
+  .gpa-tab {
+    display: none;
+  }
+  .gpa-tab.active {
+    display: block;
+  }
+  .gpa-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .gpa-row input {
+    flex: 1;
+    padding: 4px;
+    font-size: 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  .gpa-panel button.calc-btn {
+    width: 100%;
+    margin-top: 4px;
+    padding: 6px 0;
+    border-radius: 6px;
+    border: none;
+    background: #ff9800;
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .gpa-panel button.calc-btn:hover {
+    background: #e68900;
+  }
+  .gpa-panel .result {
+    margin-top: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  /* === NOTES SMALL CIRCLE ICON === */
+  .notes-toggle-btn {
+    position: fixed;
+    top: 90px;
+    left: 80px;  /* beside GPA icon */
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: #2196f3;
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .notes-toggle-btn:hover {
+    background: #1976d2;
+    transform: scale(1.05);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .feature-list { flex-direction: column; align-items: center; }
+    .hero h2 { font-size: 36px; }
+    .hero p { font-size: 18px; }
+    nav { flex-direction: column; align-items: flex-start; }
+    .nav-buttons { margin-top: 10px; }
+
+    .gpa-toggle-btn {
+      top: 100px;
+      left: 10px;
+    }
+    .notes-toggle-btn {
+      top: 100px;
+      left: 70px;
+    }
+    .gpa-dropdown {
+      top: 160px;
+      left: 10px;
+    }
+    .gpa-panel {
+      top: 220px;
+      left: 10px;
+      width: 85%;
+      max-width: 320px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav>
+  <h1> Alumni Student Network</h1>
+  <div class="nav-buttons">
+    <button onclick="window.location.href='login.html'">Login</button>
+    <button onclick="window.location.href='signup.html'">Sign Up</button>
+  </div>
+</nav>
+
+<!-- GPA SMALL CIRCLE ICON -->
+<button id="gpaToggleBtn" class="gpa-toggle-btn" aria-label="GPA Tools">
+  🎓
+</button>
+
+<!-- NOTES SMALL CIRCLE ICON -->
+<button id="notesBtn" class="notes-toggle-btn" aria-label="Notes Page" onclick="window.location.href='notes.html'">
+  📚
+</button>
+
+<!-- GPA DROPDOWN -->
+<div id="gpaDropdown" class="gpa-dropdown">
+  <button id="openSgpa">SGPA Calculator</button>
+  <button id="openCgpa">CGPA Calculator</button>
+</div>
+
+<!-- GPA PANEL WITH BOTH CALCULATORS -->
+<div class="gpa-panel" id="gpaPanel">
+  <div class="gpa-panel-header">
+    <button id="gpaBackBtn" class="gpa-back-btn" aria-label="Back to menu">←</button>
+    <div>
+      <h3>CGPA & SGPA Calculator</h3>
+      <small>Weighted calculators for your grades</small>
+    </div>
+  </div>
+
+  <div class="gpa-tabs">
+    <button type="button" class="gpa-tab-btn active" data-tab="sgpa-tab">SGPA</button>
+    <button type="button" class="gpa-tab-btn" data-tab="cgpa-tab">CGPA</button>
+  </div>
+
+  <!-- SGPA TAB -->
+  <div id="sgpa-tab" class="gpa-tab active">
+    <small>Enter grade point (0–10) & credits (up to 6 subjects):</small>
+    <div class="gpa-row">
+      <input type="number" class="sg-grade" placeholder="Grade" min="0" max="10" step="0.1">
+      <input type="number" class="sg-credit" placeholder="Credits" min="0" step="0.5">
+    </div>
+    <div class="gpa-row">
+      <input type="number" class="sg-grade" placeholder="Grade" min="0" max="10" step="0.1">
+      <input type="number" class="sg-credit" placeholder="Credits" min="0" step="0.5">
+    </div>
+    <div class="gpa-row">
+      <input type="number" class="sg-grade" placeholder="Grade" min="0" max="10" step="0.1">
+      <input type="number" class="sg-credit" placeholder="Credits" min="0" step="0.5">
+    </div>
+    <div class="gpa-row">
+      <input type="number" class="sg-grade" placeholder="Grade" min="0" max="10" step="0.1">
+      <input type="number" class="sg-credit" placeholder="Credits" min="0" step="0.5">
+    </div>
+    <div class="gpa-row">
+      <input type="number" class="sg-grade" placeholder="Grade" min="0" max="10" step="0.1">
+      <input type="number" class="sg-credit" placeholder="Credits" min="0" step="0.5">
+    </div>
+    <div class="gpa-row">
+      <input type="number" class="sg-grade" placeholder="Grade" min="0" max="10" step="0.1">
+      <input type="number" class="sg-credit" placeholder="Credits" min="0" step="0.5">
+    </div>
+    <button type="button" class="calc-btn" id="calcSgpaBtn">Calculate SGPA</button>
+    <div class="result" id="sgpaResult"></div>
+  </div>
+
+  <!-- CGPA TAB -->
+  <div id="cgpa-tab" class="gpa-tab">
+    <small>Enter SGPA & credits for each semester (up to 8):</small>
+    <div class="gpa-row">
+      <input type="number" class="cg-sgpa" placeholder="Sem SGPA" min="0" max="10" step="0.01">
+      <input type="number" class="cg-credit" placeholder="Credits" min="0" step="0.5">
+    </div>
+    <div class="gpa-row">
+      <input type="number" class="cg-sgpa" placeholder="Sem SGPA" min="0" max="10" step="0.01">
+      <input type="number" class="cg-credit" placeholder="Credits" min="0" step="0.5">
+    </div>
+    <div class="gpa-row">
+      <input type="number" class="cg-sgpa" placeholder="Sem SGPA" min="0" max="10" step="0.01">
+      <input type="number" class="cg-credit" placeholder="Credits" min="0" step="0.5">
+    </div>
+    <div class="gpa-row">
+      <input type="number" class="cg-sgpa" placeholder="Sem SGPA" min="0" max="10" step="0.01">
+      <input type="number" class="cg-credit" placeholder="Credits" min="0" step="0.5">
+    </div>
+    <div class="gpa-row">
+      <input type="number" class="cg-sgpa" placeholder="Sem SGPA" min="0" max="10" step="0.01">
+      <input type="number" class="cg-credit" placeholder="Credits" min="0" step="0.5">
+    </div>
+    <div class="gpa-row">
+      <input type="number" class="cg-sgpa" placeholder="Sem SGPA" min="0" max="10" step="0.01">
+      <input type="number" class="cg-credit" placeholder="Credits" min="0" step="0.5">
+    </div>
+    <div class="gpa-row">
+      <input type="number" class="cg-sgpa" placeholder="Sem SGPA" min="0" max="10" step="0.01">
+      <input type="number" class="cg-credit" placeholder="Credits" min="0" step="0.5">
+    </div>
+    <div class="gpa-row">
+      <input type="number" class="cg-sgpa" placeholder="Sem SGPA" min="0" max="10" step="0.01">
+      <input type="number" class="cg-credit" placeholder="Credits" min="0" step="0.5">
+    </div>
+    <button type="button" class="calc-btn" id="calcCgpaBtn">Calculate CGPA</button>
+    <div class="result" id="cgpaResult"></div>
+  </div>
+</div>
+
+<!-- Hero Section -->
+<section class="hero">
+  <h2>Bridge the Gap Between Alumni & Students</h2>
+  <p><span class="typed-text"></span></p>
+  <div class="cta">
+    <button onclick="window.location.href='signup.html'">Get Started</button>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+  <h3>Why Join Us?</h3>
+  <div class="feature-list">
+    <div class="feature">
+      <img src="https://img.icons8.com/dusk/64/mentoring.png" alt="Mentorship Icon">
+      <h4>Mentorship</h4>
+      <p>Connect with experienced alumni to guide your career and academic journey.</p>
+    </div>
+    <div class="feature">
+      <img src="https://img.icons8.com/dusk/64/networking.png" alt="Networking Icon">
+      <h4>Networking</h4>
+      <p>Build strong professional relationships within the  alumni community.</p>
+    </div>
+    <div class="feature">
+      <img src="https://img.icons8.com/dusk/64/seminar.png" alt="Seminar Icon">
+      <h4>Workshops & Events</h4>
+      <p>Attend exclusive events, webinars, and alumni meetups to learn and grow.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <p>© 2025  Alumni student Network. All rights reserved.</p>
+</footer>
+
+<!-- Scroll-to-Top Button -->
+<button id="scrollTopBtn" onclick="scrollToTop()">⬆️</button>
+
+<script>
+  // Typed Text Animation
+  const typedText = document.querySelector('.typed-text');
+  const phrases = ["Connect.", "Learn.", "Grow."];
+  let i = 0, j = 0, currentPhrase = [], isDeleting = false;
+  function type() {
+    if (i >= phrases.length) i = 0;
+    let fullText = phrases[i];
+    if (!isDeleting) {
+      currentPhrase.push(fullText[j]);
+      typedText.textContent = currentPhrase.join('');
+      j++;
+      if (j === fullText.length) { isDeleting = true; setTimeout(type, 1000); } 
+      else { setTimeout(type, 150); }
+    } else {
+      currentPhrase.pop();
+      typedText.textContent = currentPhrase.join('');
+      if (currentPhrase.length === 0) { isDeleting = false; i++; j = 0; }
+      setTimeout(type, 100);
+    }
+  }
+  type();
+
+  // Feature fade-in on scroll
+  const features = document.querySelectorAll('.feature');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  features.forEach(feature => observer.observe(feature));
+
+  // Scroll-to-Top functionality
+  const scrollBtn = document.getElementById('scrollTopBtn');
+  window.onscroll = function() {
+    scrollBtn.style.display = (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) ? 'block' : 'none';
+  };
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // === GPA ICON & DROPDOWN ===
+  const gpaToggleBtn = document.getElementById('gpaToggleBtn');
+  const gpaDropdown = document.getElementById('gpaDropdown');
+  const gpaPanel = document.getElementById('gpaPanel');
+  const openSgpa = document.getElementById('openSgpa');
+  const openCgpa = document.getElementById('openCgpa');
+  const gpaBackBtn = document.getElementById('gpaBackBtn');
+
+  gpaToggleBtn.addEventListener('click', () => {
+    if (gpaDropdown.style.display === 'block') {
+      gpaDropdown.style.display = 'none';
+    } else {
+      gpaDropdown.style.display = 'block';
+    }
+  });
+
+  function setActiveTab(targetId) {
+    const gpaTabButtons = document.querySelectorAll('.gpa-tab-btn');
+    const gpaTabs = document.querySelectorAll('.gpa-tab');
+
+    gpaTabButtons.forEach(btn => {
+      if (btn.getAttribute('data-tab') === targetId) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+
+    gpaTabs.forEach(tab => {
+      if (tab.id === targetId) tab.classList.add('active');
+      else tab.classList.remove('active');
+    });
+  }
+
+  openSgpa.addEventListener('click', () => {
+    gpaPanel.style.display = 'block';
+    setActiveTab('sgpa-tab');
+    gpaDropdown.style.display = 'none';
+  });
+
+  openCgpa.addEventListener('click', () => {
+    gpaPanel.style.display = 'block';
+    setActiveTab('cgpa-tab');
+    gpaDropdown.style.display = 'none';
+  });
+
+  // Back arrow: hide panel, show dropdown again
+  gpaBackBtn.addEventListener('click', () => {
+    gpaPanel.style.display = 'none';
+    gpaDropdown.style.display = 'block';
+  });
+
+  // Tab button clicks inside panel
+  const gpaTabButtons = document.querySelectorAll('.gpa-tab-btn');
+  const gpaTabs = document.querySelectorAll('.gpa-tab');
+
+  gpaTabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.getAttribute('data-tab');
+      setActiveTab(targetId);
+    });
+  });
+
+  // === SGPA CALCULATION ===
+  const calcSgpaBtn = document.getElementById('calcSgpaBtn');
+  const sgpaResult = document.getElementById('sgpaResult');
+
+  calcSgpaBtn.addEventListener('click', () => {
+    const gradeInputs = document.querySelectorAll('.sg-grade');
+    const creditInputs = document.querySelectorAll('.sg-credit');
+    let totalPoints = 0;
+    let totalCredits = 0;
+
+    for (let idx = 0; idx < gradeInputs.length; idx++) {
+      const g = parseFloat(gradeInputs[idx].value);
+      const c = parseFloat(creditInputs[idx].value);
+      if (!isNaN(g) && !isNaN(c) && c > 0) {
+        totalPoints += g * c;
+        totalCredits += c;
+      }
+    }
+
+    if (totalCredits === 0) {
+      sgpaResult.textContent = "Please fill at least one subject with grade & credits.";
+      return;
+    }
+
+    const sgpa = totalPoints / totalCredits;
+    sgpaResult.textContent = "Your SGPA is: " + sgpa.toFixed(2);
+  });
+
+  // === CGPA CALCULATION ===
+  const calcCgpaBtn = document.getElementById('calcCgpaBtn');
+  const cgpaResult = document.getElementById('cgpaResult');
+
+  calcCgpaBtn.addEventListener('click', () => {
+    const sgpaInputs = document.querySelectorAll('.cg-sgpa');
+    const creditInputs = document.querySelectorAll('.cg-credit');
+    let totalPoints = 0;
+    let totalCredits = 0;
+
+    for (let idx = 0; idx < sgpaInputs.length; idx++) {
+      const s = parseFloat(sgpaInputs[idx].value);
+      const c = parseFloat(creditInputs[idx].value);
+      if (!isNaN(s) && !isNaN(c) && c > 0) {
+        totalPoints += s * c;
+        totalCredits += c;
+      }
+    }
+
+    if (totalCredits === 0) {
+      cgpaResult.textContent = "Please fill at least one semester SGPA & credits.";
+      return;
+    }
+
+    const cgpa = totalPoints / totalCredits;
+    cgpaResult.textContent = "Your CGPA is: " + cgpa.toFixed(2);
+  });
+</script>
+</body>
+</html>

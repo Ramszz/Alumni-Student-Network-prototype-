@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Directory Hub - Alumni Student Network</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body, html {
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80') 
+      no-repeat center center/cover;
+      color: #fff;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 0;
+    }
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ffb347;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
+    }
+    nav button {
+      background: #ff9800;
+      border: none;
+      padding: 10px 16px;
+      margin-left: 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    nav button:hover {
+      background: #e68900;
+    }
+
+    .hub-card {
+      width: 100%;
+      max-width: 650px;
+      background: rgba(0,0,0,0.55);
+      border-radius: 16px;
+      padding: 24px 20px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.7);
+      text-align: left;
+    }
+    .hub-card h2 {
+      font-size: 1.6rem;
+      color: #ffcc80;
+      margin-bottom: 8px;
+    }
+    .hub-card p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      margin-bottom: 18px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+    select, input[type="text"] {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 0.95rem;
+    }
+    input[type="text"] {
+      margin-bottom: 10px;
+    }
+    .note {
+      font-size: 0.8rem;
+      opacity: 0.85;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <h1>Alumni Student Network</h1>
+      <nav>
+        <button onclick="window.location.href='dashboard.html'">Dashboard</button>
+        <!-- Directory Hub button removed because we are already here -->
+        <button onclick="window.location.href='student-directory.html'">Student Directory</button>
+        <button onclick="logout()">Logout</button>
+      </nav>
+    </header>
+
+    <section class="hub-card">
+      <h2>Directory Hub – Choose Your College</h2>
+      <p>Select your college to view alumni from that institute.</p>
+
+      <div class="form-group">
+        <label for="collegeSearch">Search College</label>
+        <input 
+          type="text" 
+          id="collegeSearch" 
+          placeholder="Search by college name, id, or city..." 
+          autofocus
+        />
+        <div class="note">Start typing your college name; the list below will filter automatically.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="collegeSelect">Select College</label>
+        <select id="collegeSelect"></select>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem('loggedInUser'));
+    if (!user) window.location.href = 'login.html';
+
+    function logout() {
+      localStorage.removeItem('loggedInUser');
+      alert('You have been logged out!');
+      window.location.href = 'login.html';
+    }
+
+    const COLLEGES = [
+      { id: 'DSCE', name: 'Dayananda Sagar College of Engineering', city: 'Bengaluru' },
+      { id: 'RVCE', name: 'R.V. College of Engineering', city: 'Bengaluru' },
+      { id: 'PESU', name: 'PES University', city: 'Bengaluru' },
+      { id: 'BMSCE', name: 'BMS College of Engineering', city: 'Bengaluru' },
+      { id: 'MSRIT', name: 'M.S. Ramaiah Institute of Technology', city: 'Bengaluru' },
+      { id: 'NHCE', name: 'New Horizon College of Engineering', city: 'Bengaluru' },
+      { id: 'BIT_BLR', name: 'Bangalore Institute of Technology', city: 'Bengaluru' },
+      { id: 'CHRIST', name: 'Christ University - Faculty of Engineering', city: 'Bengaluru' },
+      { id: 'SJCE', name: 'Sri Jayachamarajendra College of Engineering', city: 'Mysuru' },
+      { id: 'BITM', name: 'Ballari Institute of Technology & Management (BITM)', city: 'Ballari' },
+      { id: 'RIMAC', name: 'RIMAC Engineering College', city: 'Ballari' },
+      { id: 'SLN', name: 'SLN College of Engineering', city: 'Raichur' },
+      { id: 'NAVDEV_IT', name: 'Navadev Institute of Technology', city: 'Ballari' },
+      { id: 'NAGARJUNA', name: 'Nagarjuna Institute of Technology', city: 'Bengaluru' },
+      { id: 'NAGARJUNA_ALT', name: 'Nagarjuna College of Engineering & Technology', city: 'Bengaluru' },
+      { id: 'VNR', name: 'VNR Vignana Jyothi Institute of Engg & Tech', city: 'Hyderabad' },
+      { id: 'VJIT', name: 'Vidya Jyothi Institute of Technology (VJIT)', city: 'Hyderabad' },
+      { id: 'CBIT', name: 'Chaitanya Bharathi Institute of Technology', city: 'Hyderabad' },
+      { id: 'JNTUH', name: 'JNTU Hyderabad College of Engineering', city: 'Hyderabad' },
+      { id: 'MLRIT', name: 'MLR Institute of Technology', city: 'Hyderabad' },
+      { id: 'VCE', name: 'Vasavi College of Engineering', city: 'Hyderabad' },
+      { id: 'GNITS', name: 'G. Narayanamma Institute of Technology', city: 'Hyderabad' },
+      { id: 'GNI', name: 'Guru Nanak Institutions Technical Campus', city: 'Hyderabad' },
+      { id: 'CMRIT_HYD', name: 'CMR Institute of Technology - Hyderabad', city: 'Hyderabad' }
+    ];
+
+    const collegeSelect = document.getElementById('collegeSelect');
+    const collegeSearch = document.getElementById('collegeSearch');
+
+    function renderColleges(filterText = '') {
+      collegeSelect.innerHTML = '';
+
+      const text = filterText.trim().toLowerCase();
+
+      const filtered = COLLEGES.filter(c => {
+        if (!text) return true;
+        return (
+          c.name.toLowerCase().includes(text) ||
+          c.city.toLowerCase().includes(text) ||
+          c.id.toLowerCase().includes(text)
+        );
+      });
+
+      if (filtered.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = 'No colleges found';
+        opt.disabled = true;
+        opt.selected = true;
+        collegeSelect.appendChild(opt);
+        return;
+      }
+
+      filtered.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = `${c.name} (${c.city})`;
+        collegeSelect.appendChild(opt);
+      });
+    }
+
+    function goToAlumniDirectory(collegeId) {
+      if (!collegeId) return;
+
+      const PAGE_MAP = {
+        NAVDEV_IT: 'navdev-alumni.html',
+        BITM: 'bitm-alumni.html',
+        DSCE: 'dsce-alumni.html',
+        RVCE: 'rvce-alumni.html',
+        PESU: 'pesu-alumni.html',
+        BMSCE: 'bmsce-alumni.html',
+        MSRIT: 'msrit-alumni.html',
+        NAGARJUNA: 'nagarjuna-alumni.html',
+        JNTUH: 'jntuh-alumni.html',
+        VNR: 'vnr-alumni.html',
+        CBIT: 'cbit-alumni.html'
+      };
+
+      const page = PAGE_MAP[collegeId]
+        ? PAGE_MAP[collegeId]
+        : `alumni-directory.html?college=${encodeURIComponent(collegeId)}`;
+
+      window.location.href = page;
+    }
+
+    collegeSelect.addEventListener('change', (e) => {
+      goToAlumniDirectory(e.target.value);
+    });
+
+    collegeSearch.addEventListener('input', (e) => {
+      renderColleges(e.target.value);
+    });
+
+    // initial render (no filter, empty search)
+    renderColleges('');
+  </script>
+
+</body>
+</html>

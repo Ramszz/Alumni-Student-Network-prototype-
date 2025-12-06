@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alumni Profile</title>
+
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI'; }
+
+    body {
+        height:100vh;
+        background:url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80')
+        no-repeat center/cover;
+        position:relative;
+        color:#fff;
+    }
+
+    body::before {
+        content:"";
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,0.7);
+        z-index:0;
+    }
+
+    .container {
+        position:relative;
+        z-index:2;
+        max-width:800px;
+        margin:50px auto;
+        background:rgba(255,255,255,0.1);
+        padding:30px;
+        border-radius:20px;
+        backdrop-filter:blur(8px);
+        box-shadow:0 0 20px rgba(0,0,0,0.5);
+    }
+
+    h1 { font-size:2rem; margin-bottom:10px; color:#ffd28a; }
+    h2 { margin-top:20px; color:#ffcc80; }
+    .chip {
+        display:inline-block;
+        background:rgba(255,255,255,0.2);
+        padding:6px 12px;
+        border-radius:20px;
+        margin-right:5px;
+        margin-top:5px;
+    }
+
+    button {
+        margin-top:20px;
+        background:#ff9800;
+        border:none;
+        padding:12px 18px;
+        color:#fff;
+        font-weight:bold;
+        border-radius:10px;
+        cursor:pointer;
+    }
+    button:hover { background:#e68900; }
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <h1 id="name"></h1>
+    <p id="meta"></p>
+
+    <h2>Skills</h2>
+    <div id="skills"></div>
+
+    <h2>How I can help</h2>
+    <p id="helpText"></p>
+
+    <button onclick="history.back()">Back</button>
+</div>
+
+<script>
+    // Load alumni data (same as your BITM page)
+    const ALUMNI = {
+        "BITM-1": { name:"Ravi Kulkarni", grad:2019, dept:"CSE", domain:"Java Developer", company:"Infosys", skills:["Java","Spring","SQL"], help:"Campus placements & Java roadmap." },
+        "BITM-2": { name:"Sneha Patil", grad:2020, dept:"CSE", domain:"Full Stack Developer", company:"TCS", skills:["React","Node.js","MongoDB"], help:"Full-stack projects & interview prep." },
+        "BITM-3": { name:"Manoj R", grad:2018, dept:"ME", domain:"Design Engineer", company:"Tata Motors", skills:["CATIA","SolidWorks","GD&T"], help:"Mechanical design careers." },
+        "BITM-4": { name:"Aishwarya S", grad:2021, dept:"ECE", domain:"Embedded Developer", company:"Bosch", skills:["C","UART","Embedded C"], help:"Embedded mini-projects." },
+        "BITM-5": { name:"Kiran Kumar", grad:2017, dept:"CSE", domain:"Data Engineer", company:"Accenture", skills:["SQL","Python","ETL"], help:"Switching to data engineering." },
+        "BITM-6": { name:"Divya R", grad:2020, dept:"EEE", domain:"Cloud Engineer", company:"Wipro", skills:["AWS","Linux","Git"], help:"Cloud roadmap & certifications." }
+    };
+
+    // get ID from URL
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    const data = ALUMNI[id];
+
+    if (!data) {
+        document.body.innerHTML = "<h1 style='color:white;text-align:center;margin-top:100px;'>Profile not found</h1>";
+    }
+
+    document.getElementById("name").textContent = data.name;
+    document.getElementById("meta").textContent =
+        `Batch of ${data.grad} • Dept: ${data.dept} • ${data.domain} @ ${data.company}`;
+
+    document.getElementById("helpText").textContent = data.help;
+
+    document.getElementById("skills").innerHTML =
+        data.skills.map(s => `<span class='chip'>${s}</span>`).join("");
+</script>
+
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Alumni Directory - Alumni Connect Network</title>
+<style>
+  :root {
+    --accent: #ff9800;
+    --card-bg: rgba(255,255,255,0.95);
+    --muted: #666;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    margin:0;
+    padding:40px 20px;
+    min-height:100vh;
+    background-image: url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=80');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    color: #111;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(12, 18, 25, 0.55);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:18px;
+  }
+
+  h1 { color:#fff; margin:0; font-size:1.6rem; letter-spacing:0.2px; }
+  .subtitle { color: #e6e6e6; font-size:0.95rem; margin-top:6px; }
+
+  #list { margin-top:14px; }
+
+  .card {
+    background: var(--card-bg);
+    padding:14px;
+    border-radius:10px;
+    margin-bottom:12px;
+    box-shadow: 0 6px 20px rgba(2,6,23,0.25);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+  }
+
+  .meta { text-align:left; max-width:72%; }
+  .meta b { display:block; font-size:1.05rem; color:#0b1220; }
+  .meta small { color: var(--muted); display:block; margin-top:6px; }
+  .bio { margin-top:8px; color:#334155; font-size:0.95rem; }
+
+  .card-actions { display:flex; gap:8px; align-items:center; }
+  button { padding:8px 10px; border-radius:8px; border:none; cursor:pointer; font-weight:600; }
+  .view { background:#1f2937; color:#fff; }
+
+  .empty {
+    color:#e6e6e6;
+    padding:40px 16px;
+    text-align:center;
+    background: rgba(255,255,255,0.04);
+    border-radius:10px;
+  }
+
+  /* Floating Search */
+  .search-fab {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    z-index: 20;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    transition: all .22s ease;
+  }
+
+  .search-btn {
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.14);
+    backdrop-filter: blur(6px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+  }
+
+  .search-btn svg { width:22px; height:22px; fill: #fff; }
+
+  .search-input {
+    width:0;
+    opacity:0;
+    transform: translateX(10px);
+    transition: all .18s ease;
+    border-radius:999px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    background: rgba(255,255,255,0.9);
+    box-shadow: 0 6px 18px rgba(2,6,23,0.25);
+    border: none;
+  }
+
+  .search-input.open { width:320px; opacity:1; transform: translateX(0); }
+  .search-input input {
+    padding:12px 14px;
+    border:none;
+    outline:none;
+    width:100%;
+    font-size:0.95rem;
+    color:#0b1220;
+    background: transparent;
+  }
+
+  /* Scroll to top FAB */
+  .top-fab {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 20;
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    background: var(--accent);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    box-shadow: 0 8px 26px rgba(0,0,0,0.35);
+    cursor:pointer;
+    opacity:0;
+    transform: translateY(10px);
+    transition: all .2s ease;
+  }
+
+  .top-fab.visible { opacity:1; transform: translateY(0); }
+  .top-fab svg { width:20px; height:20px; fill:#fff; }
+
+  /* Dashboard Floating Button */
+  .dashboard-fab {
+    position: fixed;
+    left: 18px;
+    bottom: 18px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 50px;
+    box-shadow: 0 8px 26px rgba(0,0,0,0.35);
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .dashboard-fab:hover { background: #e68900; transform: translateY(-3px); }
+  .dashboard-fab svg { display: block; }
+
+  @media (max-width:560px) {
+    .search-input.open { width: calc(100vw - 110px); }
+    .meta { max-width:62%; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Alumni Directory</h1>
+        <div class="subtitle">Browse alumni and view profiles.</div>
+      </div>
+    </header>
+
+    <div id="list"></div>
+  </div>
+
+  <!-- Floating Search -->
+  <div class="search-fab" aria-hidden="false">
+    <div class="search-input" id="searchInputWrap" role="search">
+      <input id="searchInput" placeholder="Search alumni by name, email or bio..." aria-label="Search alumni">
+    </div>
+    <button class="search-btn" id="searchBtn" title="Search">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zM10 14a4 4 0 110-8 4 4 0 010 8z"/></svg>
+    </button>
+  </div>
+
+  <!-- Scroll to top FAB -->
+  <button id="toTop" class="top-fab" title="Scroll to top" aria-label="Scroll to top">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.59 15.41L12 8l7.41 7.41L21 14l-9-9-9 9z"/></svg>
+  </button>
+
+  <!-- Dashboard Floating Button -->
+  <a href="dashboard.html" id="dashboardBtn" class="dashboard-fab" title="Dashboard" aria-label="Dashboard">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" viewBox="0 0 24 24" width="20" height="20">
+      <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+    </svg>
+    <span>Dashboard</span>
+  </a>
+
+<script>
+(function(){
+  function getList(key) {
+    try { return JSON.parse(localStorage.getItem(key)) || []; } catch (e) { return []; }
+  }
+
+  const listEl = document.getElementById('list');
+
+  function escapeHtml(s) {
+    if (!s) return '';
+    return s.replace(/[&<>"']/g, function(c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function render(filterText) {
+    const alumni = getList('alumni').slice().reverse(); 
+    const q = (filterText || '').trim().toLowerCase();
+    const filtered = q ? alumni.filter(a => {
+      return (a.name || '').toLowerCase().includes(q) ||
+             (a.email || '').toLowerCase().includes(q) ||
+             (a.bio || '').toLowerCase().includes(q);
+    }) : alumni;
+
+    if (!filtered.length) {
+      listEl.innerHTML = !alumni.length ? 
+        '<div class="empty">No alumni yet.</div>' : 
+        '<div class="empty">No alumni match your search.</div>';
+      return;
+    }
+
+    listEl.innerHTML = filtered.map(a => {
+      const bioPreview = a.bio ? ('<div class="bio">'+ escapeHtml(a.bio.length>180 ? a.bio.slice(0,180)+'…' : a.bio) +'</div>') : '<div class="bio" style="color:#9ca3af">No bio provided</div>';
+      return `
+        <div class="card" data-id="${a.id}">
+          <div class="meta">
+            <b>${escapeHtml(a.name)}</b>
+            <small>${escapeHtml(a.email)}</small>
+            ${bioPreview}
+          </div>
+          <div class="card-actions">
+            <button class="view" onclick="viewProfile('${a.id}')">View</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  window.viewProfile = function(id) {
+    const alumni = getList('alumni');
+    const p = alumni.find(x => x.id === id);
+    if (!p) { alert('Profile not found'); return; }
+    alert(`Name: ${p.name}\nEmail: ${p.email}\nRole: ${p.role || 'alumni'}\nCreated: ${p.createdAt ? new Date(p.createdAt).toLocaleString() : '—'}\nBio: ${p.bio || '—'}`);
+  };
+
+  render();
+
+  const searchBtn = document.getElementById('searchBtn');
+  const searchWrap = document.getElementById('searchInputWrap');
+  const searchInput = document.getElementById('searchInput');
+  let searchOpen = false;
+
+  function openSearch() { searchWrap.classList.add('open'); searchInput.focus(); searchOpen = true; }
+  function closeSearch() { searchWrap.classList.remove('open'); searchInput.value = ''; render(); searchOpen = false; }
+
+  searchBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    if (!searchOpen) openSearch();
+    else { if (searchInput.value.trim()) { searchInput.value=''; render(); searchInput.focus(); } else closeSearch(); }
+  });
+
+  document.addEventListener('click', function(e){ if (!searchWrap.contains(e.target) && !searchBtn.contains(e.target) && searchOpen) closeSearch(); });
+  searchInput.addEventListener('input', function(){ render(this.value); });
+  searchInput.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeSearch(); });
+
+  const toTop = document.getElementById('toTop');
+  function checkScroll() { if (window.scrollY > 300) toTop.classList.add('visible'); else toTop.classList.remove('visible'); }
+  window.addEventListener('scroll', checkScroll); checkScroll();
+  toTop.addEventListener('click', function(){ window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+  window.addEventListener('storage', function(e){ if (e.key === 'alumni') render(document.getElementById('searchInput').value); });
+
+})();
+</script>
+</body>
+</html>

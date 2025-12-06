@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Notes | Alumni Student Network</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+  body { background: #f5f5f5; color: #333; }
+
+  nav {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 50px;
+    background: rgba(0,0,0,0.9);
+    color: #fff;
+    z-index: 1000;
+  }
+  nav h1 { font-size: 24px; }
+  nav button {
+    background: #ff9800;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  nav button:hover { background: #e68900; }
+
+  .container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+
+  .page-title {
+    font-size: 30px;
+    margin-bottom: 8px;
+  }
+  .page-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 24px;
+  }
+
+  .branch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+  }
+
+  .branch-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px 16px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .branch-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+  }
+
+  .branch-icon {
+    font-size: 26px;
+  }
+  .branch-name {
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .branch-note {
+    font-size: 13px;
+    color: #777;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 13px;
+    color: #777;
+    padding: 20px 0 30px;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <h1>Notes Library</h1>
+  <!-- 🔁 Back to your main landing page -->
+  <button onclick="window.location.href='landing.html'">⬅ Back to Home</button>
+</nav>
+
+<div class="container">
+  <h2 class="page-title">B.Tech Notes by Branch</h2>
+  <p class="page-subtitle">Choose your branch to explore semester-wise subjects and attach notes.</p>
+
+  <div class="branch-grid">
+    <div class="branch-card" onclick="openBranch('CSE')">
+      <div class="branch-icon">💻</div>
+      <div class="branch-name">CSE</div>
+      <div class="branch-note">Computer Science & Engineering</div>
+    </div>
+
+    <div class="branch-card" onclick="openBranch('ECE')">
+      <div class="branch-icon">📡</div>
+      <div class="branch-name">ECE</div>
+      <div class="branch-note">Electronics & Communication</div>
+    </div>
+
+    <div class="branch-card" onclick="openBranch('EEE')">
+      <div class="branch-icon">⚡</div>
+      <div class="branch-name">EEE</div>
+      <div class="branch-note">Electrical & Electronics Engineering</div>
+    </div>
+
+    <div class="branch-card" onclick="openBranch('AIML')">
+      <div class="branch-icon">🤖</div>
+      <div class="branch-name">AIML</div>
+      <div class="branch-note">Artificial Intelligence & ML</div>
+    </div>
+
+    <div class="branch-card" onclick="openBranch('CIVIL')">
+      <div class="branch-icon">🏗️</div>
+      <div class="branch-name">CIVIL</div>
+      <div class="branch-note">Civil Engineering</div>
+    </div>
+
+    <div class="branch-card" onclick="openBranch('MECH')">
+      <div class="branch-icon">⚙️</div>
+      <div class="branch-name">MECH</div>
+      <div class="branch-note">Mechanical Engineering</div>
+    </div>
+
+    <div class="branch-card" onclick="openBranch('IT')">
+      <div class="branch-icon">🌐</div>
+      <div class="branch-name">IT</div>
+      <div class="branch-note">Information Technology</div>
+    </div>
+
+    <div class="branch-card" onclick="openBranch('CHE')">
+      <div class="branch-icon">🧪</div>
+      <div class="branch-name">CHE</div>
+      <div class="branch-note">Chemical Engineering</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Organise notes once, reuse every semester.
+</footer>
+
+<script>
+  function openBranch(branchCode) {
+    // redirect to dynamic semester-wise page
+    window.location.href = 'branch.html?branch=' + encodeURIComponent(branchCode);
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Your Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  * {margin:0; padding:0; box-sizing:border-box; font-family: 'Roboto', sans-serif;}
+
+  body {
+    height: 100vh;
+    background: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80') 
+                no-repeat center center/cover;
+  }
+
+  body::before {
+    content:"";
+    position: fixed;
+    inset:0;
+    background: rgba(0,0,0,0.65);
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+    max-width: 450px;
+    margin: 50px auto;
+    padding: 30px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    color: white;
+  }
+
+  h1 {text-align:center; color:#ffb347; margin-bottom:20px;}
+
+  input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+  }
+
+  button {
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    background:#ff9800;
+    border:none;
+    border-radius:8px;
+    font-size:1rem;
+    font-weight:bold;
+    color:#fff;
+    cursor:pointer;
+  }
+</style>
+</head>
+
+<body>
+
+<script>
+  // Clear wrong alumni profile from previous logic
+  localStorage.removeItem("selectedMentor");
+</script>
+
+<div class="container">
+  <h1>Create Your Profile</h1>
+
+  <input type="text" id="fullName" placeholder="Full Name">
+  <input type="email" id="email" placeholder="Email">
+  <input type="text" id="college" placeholder="College Name">
+
+  <textarea id="bio" rows="4" placeholder="Write a short bio..."></textarea>
+
+  <select id="role">
+    <option>Select your role</option>
+    <option>Alumni</option>
+    <option>Student</option>
+  </select>
+
+  <button onclick="saveProfile()">Save Profile</button>
+</div>
+
+<script>
+function saveProfile() {
+  const profile = {
+    name: document.getElementById("fullName").value,
+    email: document.getElementById("email").value,
+    college: document.getElementById("college").value,
+    bio: document.getElementById("bio").value,
+    role: document.getElementById("role").value
+  };
+
+  // Load existing lists
+  let alumniDirectory = JSON.parse(localStorage.getItem("alumniDirectory")) || [];
+  let studentDirectory = JSON.parse(localStorage.getItem("studentDirectory")) || [];
+
+  // Check role and save accordingly
+  if (profile.role === "Alumni") {
+    alumniDirectory.push(profile);
+    localStorage.setItem("alumniDirectory", JSON.stringify(alumniDirectory));
+  }
+
+  if (profile.role === "Student") {
+    studentDirectory.push(profile);
+    localStorage.setItem("studentDirectory", JSON.stringify(studentDirectory));
+  }
+
+  localStorage.setItem("userProfile", JSON.stringify(profile));
+
+  alert("Profile saved successfully!");
+
+  // DO NOT redirect to any directory
+  window.location.href = "dashboard.html";
+}
+</script>
+
+</body>
+</html>

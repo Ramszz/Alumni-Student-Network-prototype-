@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BITM Ballari - Alumni Directory</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body, html {
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=80')
+      no-repeat center center/cover;
+      color: #fff;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      color: #ffcc80;
+    }
+
+    nav button {
+      background: #ff9800;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    nav button:hover {
+      background: #e68900;
+    }
+
+    .page-header {
+      margin-bottom: 20px;
+    }
+
+    .page-header h2 {
+      font-size: 1.8rem;
+      margin-bottom: 5px;
+      color: #ffd28a;
+    }
+
+    .alumni-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .alumni-card {
+      background: rgba(255,255,255,0.1);
+      padding: 18px;
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
+      transition: transform 0.2s ease;
+    }
+
+    .alumni-card:hover {
+      transform: scale(1.03);
+    }
+
+    .alumni-name-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .alumni-name-row h3 {
+      font-size: 1.2rem;
+      color: #ffe0b3;
+    }
+
+    .alumni-meta {
+      font-size: 0.9rem;
+      margin: 6px 0;
+      opacity: 0.9;
+    }
+
+    .chips {
+      margin: 10px 0;
+    }
+
+    .chip {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      padding: 5px 10px;
+      margin-right: 6px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+
+    .alumni-help {
+      margin: 10px 0 15px;
+      font-size: 0.9rem;
+    }
+
+    .alumni-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .ghost-btn {
+      padding: 8px 12px;
+      border: 1px solid #ffcc80;
+      background: transparent;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: #ffe0b3;
+    }
+
+    .ghost-btn:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    /* MODAL */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal {
+      width: 90%;
+      max-width: 480px;
+      background: #222;
+      padding: 20px;
+      border-radius: 12px;
+      color: #fff;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      cursor: pointer;
+      font-size: 1.3rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+    }
+
+    textarea {
+      height: 90px;
+      resize: none;
+    }
+
+    .previous-questions {
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px solid #555;
+    }
+
+    .question-item {
+      background: rgba(255,255,255,0.1);
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Ballari Institute of Technology & Management</h1>
+      <nav>
+        <button onclick="window.location.href='directory hub.html'">Back to Hub</button>
+        <button onclick="logout()">Logout</button>
+      </nav>
+    </header>
+
+    <section class="page-header">
+      <h2>Alumni Mentors</h2>
+      <p>BITM alumni who guide students on placements, projects, internships and career paths.</p>
+    </section>
+
+    <div id="alumniGrid" class="alumni-grid"></div>
+  </div>
+
+  <!-- MODAL -->
+  <div id="requestModalBackdrop" class="modal-backdrop">
+    <div class="modal">
+      <span id="closeModal" class="modal-close">&times;</span>
+      <h2 id="modalAlumniName">Request Guidance</h2>
+
+      <form id="requestForm">
+        <input type="text" id="studentName" placeholder="Your Name" required>
+        <input type="email" id="studentEmail" placeholder="Your Email" required>
+        <textarea id="studentQuestion" placeholder="Your Question..." required></textarea>
+        <button type="submit" class="ghost-btn" style="width:100%;">Send Request</button>
+      </form>
+
+      <div id="previousQuestions" class="previous-questions"></div>
+    </div>
+  </div>
+
+<script>
+  const user = JSON.parse(localStorage.getItem('loggedInUser'));
+  if (!user) window.location.href = 'login.html';
+
+  function logout() {
+    localStorage.removeItem('loggedInUser');
+    alert('You have been logged out!');
+    window.location.href = 'login.html';
+  }
+
+  const COLLEGE_ID = "BITM";
+
+  // Directory data (short)
+  const ALUMNI = [
+    { id:'BITM-1', name:'Ravi Kulkarni',  gradYear:2019, department:'CSE', domain:'Java Developer',       company:'Infosys',   skills:['Java','Spring','SQL'],       canHelpWith:'Campus placements & Java roadmap.' },
+    { id:'BITM-2', name:'Sneha Patil',    gradYear:2020, department:'CSE', domain:'Full Stack Developer', company:'TCS',       skills:['React','Node.js','MongoDB'], canHelpWith:'Full-stack projects & interview prep.' },
+    { id:'BITM-3', name:'Manoj R',        gradYear:2018, department:'ME',  domain:'Design Engineer',      company:'Tata Motors', skills:['CATIA','SolidWorks','GD&T'], canHelpWith:'Mechanical design careers.' },
+    { id:'BITM-4', name:'Aishwarya S',    gradYear:2021, department:'ECE', domain:'Embedded Developer',   company:'Bosch',     skills:['C','UART','Embedded C'],     canHelpWith:'Embedded mini-projects.' },
+    { id:'BITM-5', name:'Kiran Kumar',    gradYear:2017, department:'CSE', domain:'Data Engineer',        company:'Accenture', skills:['SQL','Python','ETL'],        canHelpWith:'Switching to data engineering.' },
+    { id:'BITM-6', name:'Divya R',        gradYear:2020, department:'EEE', domain:'Cloud Engineer',       company:'Wipro',     skills:['AWS','Linux','Git'],         canHelpWith:'Cloud roadmap & certifications.' },
+    { id:'BITM-7', name:'Harish M',       gradYear:2018, department:'CSE', domain:'Android Developer',    company:'Startup',   skills:['Kotlin','Firebase','Android'],canHelpWith:'Mobile app projects.' },
+    { id:'BITM-8', name:'Pooja Shankar',  gradYear:2019, department:'ISE', domain:'QA Engineer',          company:'Capgemini', skills:['Testing','Automation','Selenium'], canHelpWith:'Testing career & certification path.' },
+    { id:'BITM-9', name:'Sameer Ahmed',   gradYear:2016, department:'CSE', domain:'Tech Lead',            company:'Mindtree',  skills:['Agile','System Design','Leadership'], canHelpWith:'Career growth roadmap.' },
+    { id:'BITM-10',name:'Gayatri Rao',    gradYear:2022, department:'CSE', domain:'Associate Engineer',   company:'Infosys',   skills:['Python','SQL','HTML'],       canHelpWith:'Fresher-level interview tips.' }
+  ];
+
+  // Detailed profile data for the profile page
+  const MENTOR_PROFILES = {
+    'BITM-1': {
+      name:'Ravi Kulkarni',
+      email:'ravi.kulkarni@alumni.bitm.edu',
+      branch:'Computer Science & Engineering',
+      year:'2019',
+      location:'Bengaluru',
+      field:'Java Developer',
+      experience:'Working as Java Developer at Infosys, focusing on enterprise applications and APIs.',
+      job:'Java Developer, Infosys — approx. ₹7–8 LPA',
+      projects:[
+        'Campus Management Portal using Spring Boot',
+        'REST API for E-commerce backend'
+      ],
+      seminars:[
+        'Session on cracking service-based company interviews',
+        'Workshop on Java + Spring Boot basics'
+      ],
+      hackathons:[
+        'Internal college hackathon on fintech',
+      ],
+      internships:[
+        'Summer internship at Infosys (Mysuru campus) in Java track'
+      ],
+      miniMajorProjects:[
+        'Mini: Library Management System in Java',
+        'Major: Online Examination Portal using Spring & MySQL'
+      ],
+      qualifications:[
+        'B.E. in CSE – BITM (2019)'
+      ],
+      languages:[
+        'Java','SQL','HTML/CSS'
+      ],
+      achievements:[
+        'Top performer in Infosys training batch'
+      ],
+      linkedin:'#'
+    },
+
+    'BITM-2': {
+      name:'Sneha Patil',
+      email:'sneha.patil@alumni.bitm.edu',
+      branch:'Computer Science & Engineering',
+      year:'2020',
+      location:'Hyderabad',
+      field:'Full Stack Developer',
+      experience:'Full-stack developer at TCS building web applications using React and Node.js.',
+      job:'Full Stack Developer, TCS — approx. ₹7 LPA',
+      projects:[
+        'Employee Self-Service Portal (MERN)',
+        'Personal portfolio & blogging site'
+      ],
+      seminars:[
+        'How to build portfolio projects in MERN stack'
+      ],
+      hackathons:[
+        'TCS internal innovation challenge'
+      ],
+      internships:[
+        'Web development internship at a local startup'
+      ],
+      miniMajorProjects:[
+        'Mini: To-do application in React',
+        'Major: Placement Cell Automation Portal'
+      ],
+      qualifications:[
+        'B.E. in CSE – BITM (2020)'
+      ],
+      languages:[
+        'JavaScript','HTML/CSS','Node.js'
+      ],
+      achievements:[
+        'College level best project award (Placement Portal)'
+      ],
+      linkedin:'#'
+    },
+
+    'BITM-3': {
+      name:'Manoj R',
+      email:'manoj.r@alumni.bitm.edu',
+      branch:'Mechanical Engineering',
+      year:'2018',
+      location:'Pune',
+      field:'Design Engineer',
+      experience:'Mechanical design engineer working on automotive components at Tata Motors.',
+      job:'Design Engineer, Tata Motors — approx. ₹6 LPA',
+      projects:[
+        'Design optimisation of suspension brackets',
+        '3D modelling of chassis components'
+      ],
+      seminars:[
+        'Intro to CAD tools (CATIA & SolidWorks)'
+      ],
+      hackathons:[
+        'Automotive design challenge (internal)'
+      ],
+      internships:[
+        'Industrial training at Tata Motors plant'
+      ],
+      miniMajorProjects:[
+        'Mini: Design of gear box casing',
+        'Major: Suspension system improvement for light vehicles'
+      ],
+      qualifications:[
+        'B.E. in Mechanical – BITM (2018)'
+      ],
+      languages:[
+        'CATIA','SolidWorks','AutoCAD'
+      ],
+      achievements:[
+        'Best outgoing student – Mechanical batch 2018'
+      ],
+      linkedin:'#'
+    },
+
+    // You can fill the remaining profiles similarly:
+    'BITM-4': {
+      name:'Aishwarya S',
+      email:'aishwarya.s@alumni.bitm.edu',
+      branch:'Electronics & Communication Engineering',
+      year:'2021',
+      location:'Bengaluru',
+      field:'Embedded Developer',
+      experience:'Embedded developer at Bosch working on automotive ECUs.',
+      job:'Embedded Developer, Bosch',
+      projects:['CAN-based dashboard module','Microcontroller based automation'],
+      seminars:['Intro to Embedded Systems & Career Path'],
+      hackathons:[],
+      internships:['Embedded training at Bosch'],
+      miniMajorProjects:['Home automation using ESP32'],
+      qualifications:['B.E. in ECE – BITM (2021)'],
+      languages:['C','Embedded C'],
+      achievements:['Paper presentation on IoT-based automation'],
+      linkedin:'#'
+    },
+
+    'BITM-5': {
+      name:'Kiran Kumar',
+      email:'kiran.kumar@alumni.bitm.edu',
+      branch:'Computer Science & Engineering',
+      year:'2017',
+      location:'Bengaluru',
+      field:'Data Engineer',
+      experience:'Data engineer at Accenture building pipelines and ETL workflows.',
+      job:'Data Engineer, Accenture',
+      projects:['ETL for banking client','Data warehouse migration'],
+      seminars:['Roadmap to data engineering'],
+      hackathons:[],
+      internships:['Data analytics internship (college project)'],
+      miniMajorProjects:['Student performance analytics dashboard'],
+      qualifications:['B.E. in CSE – BITM (2017)'],
+      languages:['SQL','Python'],
+      achievements:['Spot award in Accenture'],
+      linkedin:'#'
+    },
+
+    'BITM-6': {
+      name:'Divya R',
+      email:'divya.r@alumni.bitm.edu',
+      branch:'Electrical & Electronics Engineering',
+      year:'2020',
+      location:'Bengaluru',
+      field:'Cloud Engineer',
+      experience:'Cloud engineer at Wipro working on AWS infrastructure.',
+      job:'Cloud Engineer, Wipro',
+      projects:['Lift-and-shift migration to AWS'],
+      seminars:['Intro to AWS for beginners'],
+      hackathons:[],
+      internships:['Cloud internship at Wipro'],
+      miniMajorProjects:['Smart energy monitoring system'],
+      qualifications:['B.E. in EEE – BITM (2020)', 'AWS Certified Cloud Practitioner'],
+      languages:['AWS','Linux','Python'],
+      achievements:['Cloud champion in internal training'],
+      linkedin:'#'
+    },
+
+    'BITM-7': {
+      name:'Harish M',
+      email:'harish.m@alumni.bitm.edu',
+      branch:'Computer Science & Engineering',
+      year:'2018',
+      location:'Bengaluru',
+      field:'Android Developer',
+      experience:'Android developer at a startup building consumer apps.',
+      job:'Android Developer – Startup',
+      projects:['Food delivery app','College community app'],
+      seminars:['How to start with Android dev'],
+      hackathons:['College app-dev hackathon'],
+      internships:['Android internship in local startup'],
+      miniMajorProjects:['Campus navigation app'],
+      qualifications:['B.E. in CSE – BITM (2018)'],
+      languages:['Kotlin','Java'],
+      achievements:['Won internal app dev contest'],
+      linkedin:'#'
+    },
+
+    'BITM-8': {
+      name:'Pooja Shankar',
+      email:'pooja.shankar@alumni.bitm.edu',
+      branch:'Information Science & Engineering',
+      year:'2019',
+      location:'Hyderabad',
+      field:'QA Engineer',
+      experience:'QA engineer at Capgemini focusing on automation.',
+      job:'QA Engineer, Capgemini',
+      projects:['Automation suite for banking web app'],
+      seminars:['Testing vs Development – choosing your path'],
+      hackathons:[],
+      internships:['Manual testing internship'],
+      miniMajorProjects:['Bug tracker application'],
+      qualifications:['B.E. in ISE – BITM (2019)'],
+      languages:['Java','Selenium'],
+      achievements:['Best tester in project team'],
+      linkedin:'#'
+    },
+
+    'BITM-9': {
+      name:'Sameer Ahmed',
+      email:'sameer.ahmed@alumni.bitm.edu',
+      branch:'Computer Science & Engineering',
+      year:'2016',
+      location:'Bengaluru',
+      field:'Tech Lead',
+      experience:'Tech lead at Mindtree leading a team of developers.',
+      job:'Tech Lead, Mindtree',
+      projects:['Large-scale enterprise integration project'],
+      seminars:['From fresher to tech lead – roadmap'],
+      hackathons:[],
+      internships:[],
+      miniMajorProjects:['E-learning platform'],
+      qualifications:['B.E. in CSE – BITM (2016)'],
+      languages:['Java','Architecture'],
+      achievements:['Multiple client appreciation awards'],
+      linkedin:'#'
+    },
+
+    'BITM-10': {
+      name:'Gayatri Rao',
+      email:'gayatri.rao@alumni.bitm.edu',
+      branch:'Computer Science & Engineering',
+      year:'2022',
+      location:'Bengaluru',
+      field:'Associate Engineer',
+      experience:'Associate engineer at Infosys working on backend services.',
+      job:'Associate Engineer, Infosys',
+      projects:['Internal tools for HR'],
+      seminars:['How I cracked my first job'],
+      hackathons:[],
+      internships:['Final-year internship at Infosys'],
+      miniMajorProjects:['Online fee payment portal'],
+      qualifications:['B.E. in CSE – BITM (2022)'],
+      languages:['Java','SQL'],
+      achievements:['Gold medalist in academics (CSE)'],
+      linkedin:'#'
+    }
+  };
+
+  const alumniGrid = document.getElementById("alumniGrid");
+
+  function renderAlumni() {
+    alumniGrid.innerHTML = "";
+    ALUMNI.forEach(a => {
+      alumniGrid.innerHTML += `
+        <div class="alumni-card">
+          <div class="alumni-name-row">
+            <h3>${a.name}</h3>
+            <span>${a.gradYear}</span>
+          </div>
+          <div class="alumni-meta">
+            Dept: ${a.department} • ${a.domain} @ ${a.company}
+          </div>
+          <div class="chips">
+            ${a.skills.map(s => `<span class="chip">${s}</span>`).join("")}
+          </div>
+          <div class="alumni-help">
+            <strong>I can help with:</strong> ${a.canHelpWith}
+          </div>
+          <div class="alumni-actions">
+            <button class="ghost-btn" onclick="openRequest('${a.id}')">Request Guidance</button>
+            <button class="ghost-btn" onclick="openProfile('${a.id}')">View Profile</button>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  const modal = document.getElementById("requestModalBackdrop");
+  const modalName = document.getElementById("modalAlumniName");
+  const closeModalBtn = document.getElementById("closeModal");
+  const requestForm = document.getElementById("requestForm");
+  const previousQ = document.getElementById("previousQuestions");
+
+  let currentAlumni = null;
+
+  function openRequest(id) {
+    currentAlumni = ALUMNI.find(a => a.id === id);
+    modalName.textContent = `Request Guidance from ${currentAlumni.name}`;
+    modal.classList.add("active");
+    loadPreviousQuestions();
+  }
+
+  function openProfile(id) {
+    const profile = MENTOR_PROFILES[id];
+    if (!profile) {
+      alert('Profile coming soon for this mentor.');
+      return;
+    }
+    localStorage.setItem('selectedMentor', JSON.stringify(profile));
+    window.location.href = 'mentor-profile.html';
+  }
+
+  closeModalBtn.onclick = () => modal.classList.remove("active");
+  modal.onclick = e => { if (e.target === modal) modal.classList.remove("active") };
+
+  requestForm.addEventListener("submit", e => {
+    e.preventDefault();
+    if (!currentAlumni) return;
+
+    const req = {
+      collegeId: COLLEGE_ID,
+      alumniId: currentAlumni.id,
+      studentName: document.getElementById("studentName").value,
+      studentEmail: document.getElementById("studentEmail").value,
+      question: document.getElementById("studentQuestion").value,
+      createdAt: new Date().toISOString()
+    };
+
+    const stored = JSON.parse(localStorage.getItem("mentorshipRequests") || "[]");
+    stored.push(req);
+    localStorage.setItem("mentorshipRequests", JSON.stringify(stored));
+
+    alert("Your request has been sent!");
+    requestForm.reset();
+    loadPreviousQuestions();
+  });
+
+  function loadPreviousQuestions() {
+    const stored = JSON.parse(localStorage.getItem("mentorshipRequests") || "[]");
+    const related = stored.filter(r => r.alumniId === (currentAlumni && currentAlumni.id));
+
+    if (!related.length) {
+      previousQ.innerHTML = "<p>No previous questions.</p>";
+      return;
+    }
+
+    previousQ.innerHTML = related
+      .reverse()
+      .map(q => `
+        <div class="question-item">
+          <strong>${q.studentName}</strong>
+          <p>${q.question}</p>
+          <small>${new Date(q.createdAt).toLocaleString()}</small>
+        </div>
+      `)
+      .join("");
+  }
+
+  renderAlumni();
+</script>
+
+</body>
+</html>
